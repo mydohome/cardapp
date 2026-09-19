@@ -97,6 +97,10 @@ export default function CardListPage() {
 
       {sharingCard && <ShareModal card={sharingCard} onClose={handleModalClose} />}
       {editingCard && <EditCardModal card={editingCard} onClose={handleModalClose} />}
+
+      <button className="fab-scan" aria-label="Scansiona carta" onClick={() => navigate("/scan")}>
+        +
+      </button>
     </div>
   );
 }

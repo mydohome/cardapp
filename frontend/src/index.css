@@ -10,8 +10,10 @@ body {
 }
 
 .page {
-  padding: 16px;
-  padding-bottom: 80px;
+  padding-top: max(16px, env(safe-area-inset-top));
+  padding-right: max(16px, env(safe-area-inset-right));
+  padding-left: max(16px, env(safe-area-inset-left));
+  padding-bottom: calc(88px + env(safe-area-inset-bottom));
 }
 
 .centered-page {
@@ -19,6 +21,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
+    env(safe-area-inset-left);
 }
 
 .card-form {
@@ -256,12 +260,21 @@ button:disabled {
   align-items: center;
   justify-content: center;
   gap: 16px;
-  padding: 16px;
+  /* Centrare va fatto sull'area davvero visibile: in orizzontale il notch/Dynamic
+     Island crea un safe-area-inset asimmetrico (a sinistra o a destra a seconda
+     della rotazione), altrimenti il barcode risulta centrato sulla larghezza
+     totale del viewport ma con una fetta "mangiata" dal notch, apparendo spostato. */
+  padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right))
+    max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+  box-sizing: border-box;
+  width: 100%;
 }
 
 .fullscreen-barcode canvas {
+  display: block;
   max-width: 100%;
   height: auto;
+  margin: 0 auto;
 }
 
 .card-title {
@@ -338,4 +351,22 @@ button:disabled {
 
 button.danger {
   background: #7f1d1d;
+}
+
+.fab-scan {
+  position: fixed;
+  right: max(20px, env(safe-area-inset-right));
+  bottom: calc(20px + env(safe-area-inset-bottom));
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  border-radius: 50%;
+  background: #2563eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  line-height: 1;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+  z-index: 50;
 }

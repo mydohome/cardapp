@@ -22,11 +22,15 @@ le altre sono previste ma non ancora sviluppate.
 ## 3. Riconoscimento negozio/logo
 - **[MVP]** OCR sulla foto (`pytesseract`, anche qui la foto non viene salvata) + fuzzy
   match testuale contro il catalogo `stores`.
-- **[MVP]** Catalogo negozi pre-popolato (script `backend/app/seed_stores.py`) con logo
-  incluso: i loghi vengono da [Clearbit Logo API](https://clearbit.com/logo) a partire
-  dal dominio ufficiale del negozio (non ospitiamo noi le immagini, solo un link).
-  Rieseguire lo script dopo un aggiornamento aggiunge il logo ai negozi che ancora
-  non ce l'hanno, senza toccare eventuali logo_url personalizzati a mano.
+- **[MVP]** Catalogo negozi pre-popolato (script `backend/app/seed_stores.py`, ~35 catene
+  italiane: supermercati, elettronica, bricolage, profumerie, farmacie, librerie, cinema,
+  carburante) con logo incluso: la favicon del sito ufficiale del negozio, presa dal
+  percorso classico o tramite il servizio favicon di Google per i siti che la bloccano
+  (non ospitiamo noi le immagini, solo un link; [Clearbit Logo API](https://clearbit.com/logo),
+  usata in precedenza, è stata ritirata senza preavviso). Rieseguire lo script dopo un
+  aggiornamento aggiunge/corregge il logo dei negozi che non ne hanno ancora uno verificato,
+  senza toccare eventuali `logo_url` personalizzati a mano. Se un logo non compare per un
+  negozio, va verificato con `curl` dal server e corretto nello script.
 - v2: embedding visivo del logo (CLIP) per match anche senza testo leggibile.
 - **[MVP]** Assegnazione/cambio manuale del negozio dalla modifica carta (ricerca per
   nome), utile quando il match automatico fallisce o per correggerlo.
@@ -35,6 +39,8 @@ le altre sono previste ma non ancora sviluppate.
 - **[MVP]** Ricerca istantanea client-side (Fuse.js) su tutte le carte caricate in cache locale.
 - **[MVP]** Vista fullscreen del barcode con Screen Wake Lock (evita spegnimento schermo alla cassa).
 - **[MVP]** Sezione "Recenti" per accesso rapido alle carte usate più spesso.
+- **[MVP]** Pulsante di scansione anche come FAB (badge circolare) in basso a destra
+  nella lista carte, oltre a quello nell'header, per un accesso più comodo a una mano.
 - **[MVP]** Modifica (nome, codice, formato, negozio, note) ed eliminazione di una carta
   posseduta, dalla lista carte (pulsante ✎). Un utente con permesso "può modificare" su
   una carta condivisa può già farlo via API, ma non ha ancora un pulsante nell'interfaccia
