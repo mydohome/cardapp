@@ -17,24 +17,28 @@ rete al suo compose se non c'è già).
 
 ## 2. Immagini
 
-Questo compose usa `image:` (non `build:`) per `web` e `app`, quindi vanno
-buildate e pubblicate prima del deploy, ad es. su GHCR:
+Questo compose usa `build:` per `web` e `app`: vengono buildate direttamente
+sull'host di produzione da questo stesso repository, la prima volta che lanci
+`docker compose up --build` (nessun passaggio manuale prima).
 
-```bash
-docker build -t ghcr.io/mydohome/cardapp-frontend:latest ../frontend
-docker build -t ghcr.io/mydohome/cardapp-backend:latest ../backend
-docker push ghcr.io/mydohome/cardapp-frontend:latest
-docker push ghcr.io/mydohome/cardapp-backend:latest
-```
-
-In alternativa, per buildare direttamente sull'host di produzione, sostituisci
-nel compose:
+Se invece preferisci pubblicarle su una registry (es. per un flusso CI/CD che
+builda una volta sola e distribuisce l'immagine già pronta a più host),
+sostituisci nel compose:
 
 ```yaml
 web:
-  build: ../frontend
+  image: ghcr.io/<tua-org>/cardapp-frontend:latest
 app:
-  build: ../backend
+  image: ghcr.io/<tua-org>/cardapp-backend:latest
+```
+
+e prima del deploy:
+
+```bash
+docker build -t ghcr.io/<tua-org>/cardapp-frontend:latest ../frontend
+docker build -t ghcr.io/<tua-org>/cardapp-backend:latest ../backend
+docker push ghcr.io/<tua-org>/cardapp-frontend:latest
+docker push ghcr.io/<tua-org>/cardapp-backend:latest
 ```
 
 ## 3. Configurazione

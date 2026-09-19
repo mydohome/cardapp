@@ -3,17 +3,18 @@
 # Presupposti:
 # - Esiste gia' una rete Docker esterna "proxy-net" condivisa con lo stack di NPM
 #   (crearla una tantum con: docker network create proxy-net).
-# - Le immagini "app" (backend) e "web" (frontend) sono gia' state buildate e
-#   pubblicate su una registry (vedi deploy/README.md), oppure sostituisci
-#   "image:" con "build: ../backend" / "build: ../frontend" per buildarle
-#   direttamente sull'host di produzione.
+# - Le immagini "app" (backend) e "web" (frontend) vengono buildate direttamente
+#   sull'host di produzione da questo stesso repository (come lo stack di
+#   sviluppo). Se preferisci pubblicarle su una registry (es. per CI/CD) e
+#   scaricarle invece di buildarle, sostituisci "build:" con "image:
+#   ghcr.io/<org>/cardapp-frontend:latest" (vedi deploy/README.md).
 # - In NPM crei un solo Proxy Host che punta a "cardapp-web:80": il frontend
 #   fa da unico punto di ingresso e instrada internamente /api/* al backend
 #   (vedi frontend/nginx.conf.template), cosi' l'app resta same-origin.
 
 services:
   web:
-    image: ghcr.io/mydohome/cardapp-frontend:latest
+    build: ../frontend
     container_name: cardapp-web
     restart: unless-stopped
     environment:
@@ -36,7 +37,7 @@ services:
       - app
 
   app:
-    image: ghcr.io/mydohome/cardapp-backend:latest
+    build: ../backend
     container_name: cardapp-app
     restart: unless-stopped
     env_file:
