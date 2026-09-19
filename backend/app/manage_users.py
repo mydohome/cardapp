@@ -5,23 +5,27 @@ Uso (dal container backend/app):
 """
 
 import getpass
+import re
 import sys
 
 from app.database import Base, SessionLocal, engine
 from app.models import User
+from app.schemas import USERNAME_PATTERN
 from app.security import hash_password
+
+USERNAME_RE = re.compile(USERNAME_PATTERN)
 
 
 def list_users(db) -> None:
-    users = db.query(User).order_by(User.email).all()
+    users = db.query(User).order_by(User.username).all()
     if not users:
         print("Nessun utente presente.")
         return
-    print(f"{'Email':<35} {'Nome':<20} Creato il")
-    print("-" * 70)
+    print(f"{'Username':<20} {'Nome':<20} {'Email':<30} Creato il")
+    print("-" * 90)
     for u in users:
         created = u.created_at.strftime("%Y-%m-%d") if u.created_at else "-"
-        print(f"{u.email:<35} {(u.display_name or '-'):<20} {created}")
+        print(f"{u.username:<20} {(u.display_name or '-'):<20} {(u.email or '-'):<30} {created}")
 
 
 def prompt_password(label: str = "Password") -> str:
@@ -37,55 +41,78 @@ def prompt_password(label: str = "Password") -> str:
         return pw
 
 
+def prompt_username(db, label: str = "Username") -> str | None:
+    username = input(f"{label} (3-32 caratteri, lettere/cifre/punto/underscore/trattino): ").strip()
+    if not USERNAME_RE.match(username):
+        print("Username non valido.")
+        return None
+    if db.query(User).filter(User.username == username).first():
+        print(f"Esiste gia' un utente con username '{username}'.")
+        return None
+    return username
+
+
 def create_user(db) -> None:
-    email = input("Email: ").strip().lower()
-    if not email:
-        print("Email obbligatoria.")
+    username = prompt_username(db)
+    if not username:
         return
-    if db.query(User).filter(User.email == email).first():
+
+    email = input("Email (opzionale): ").strip().lower() or None
+    if email and db.query(User).filter(User.email == email).first():
         print(f"Esiste gia' un utente con email {email}.")
         return
 
     display_name = input("Nome visualizzato (opzionale): ").strip() or None
     password = prompt_password()
 
-    user = User(email=email, hashed_password=hash_password(password), display_name=display_name)
+    user = User(
+        username=username,
+        email=email,
+        hashed_password=hash_password(password),
+        display_name=display_name,
+    )
     db.add(user)
     db.commit()
-    print(f"Utente '{email}' creato.")
+    print(f"Utente '{username}' creato.")
+
+
+def _find_user(db) -> User | None:
+    username = input("Username: ").strip()
+    user = db.query(User).filter(User.username == username).first()
+    if not user:
+        print("Utente non trovato.")
+        return None
+    return user
 
 
 def change_password(db) -> None:
-    email = input("Email dell'utente: ").strip().lower()
-    user = db.query(User).filter(User.email == email).first()
+    user = _find_user(db)
     if not user:
-        print("Utente non trovato.")
         return
 
     password = prompt_password("Nuova password")
     user.hashed_password = hash_password(password)
     db.commit()
-    print(f"Password aggiornata per '{email}'.")
+    print(f"Password aggiornata per '{user.username}'.")
 
 
 def delete_user(db) -> None:
-    email = input("Email dell'utente da eliminare: ").strip().lower()
-    user = db.query(User).filter(User.email == email).first()
+    user = _find_user(db)
     if not user:
-        print("Utente non trovato.")
         return
 
     confirm = input(
-        f"Confermi l'eliminazione di '{email}'? Le sue carte (non condivise) andranno perse. "
+        f"Confermi l'eliminazione di '{user.username}'? Le sue carte (non condivise) andranno perse. "
         "Scrivi 'si' per confermare: "
     )
     if confirm.strip().lower() != "si":
         print("Annullato.")
         return
 
+    username = user.username
     db.delete(user)
     db.commit()
-    print(f"Utente '{email}' eliminato.")
+    print(f"Utente '{username}' eliminato.")
 
 
 MENU = """

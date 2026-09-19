@@ -26,3 +26,17 @@ export interface Card {
   updated_at: string;
   shared_by?: string | null;
 }
+
+export type SharePermission = "view" | "edit";
+
+export interface Share {
+  user_id: string;
+  username: string;
+  display_name?: string | null;
+  permission: SharePermission;
+}
+
+export interface Invite {
+  token: string;
+  expires_at?: string | null;
+}

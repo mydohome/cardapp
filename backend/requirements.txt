@@ -6,6 +6,11 @@ pydantic==2.9.2
 pydantic-settings==2.5.2
 python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
+# passlib 1.7.4 non e' compatibile con bcrypt >= 4.1 (rimuove un attributo
+# interno che passlib usa per rilevare la versione): senza questo pin,
+# ogni hash/verifica password fallisce con "password cannot be longer
+# than 72 bytes". Vedi https://github.com/pyca/bcrypt/issues/684
+bcrypt==4.0.1
 python-multipart==0.0.9
 redis==5.0.8
 boto3==1.35.24

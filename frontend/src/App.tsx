@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import CardFullscreenPage from "./pages/CardFullscreenPage";
 import CardListPage from "./pages/CardListPage";
+import InvitePage from "./pages/InvitePage";
 import LoginPage from "./pages/LoginPage";
 import ScanCardPage from "./pages/ScanCardPage";
 
@@ -16,6 +17,7 @@ export default function App() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/invite/:token" element={<InvitePage />} />
       <Route
         path="/"
         element={

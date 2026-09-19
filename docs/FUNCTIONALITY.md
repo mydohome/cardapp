@@ -4,8 +4,11 @@ Stato: v1 (scaffold). Sezioni marcate **[MVP]** sono implementate nello scaffold
 le altre sono previste ma non ancora sviluppate.
 
 ## 1. Autenticazione
-- **[MVP]** Registrazione email+password, login con JWT.
-- Reset password via email.
+- **[MVP]** Username semplice (3-32 caratteri) + password come credenziali principali;
+  l'email è facoltativa. Login accetta indifferentemente username o email.
+- **[MVP]** Utenti creati dall'amministratore via CLI (`./manage-users.sh`), non c'è
+  auto-registrazione dall'app: adatto a un uso familiare/multiutente su un'istanza propria.
+- Reset password via email (richiede che l'utente abbia un'email impostata).
 - Sign in with Apple / Google (consigliato per utenza iPhone).
 
 ## 2. Acquisizione carta
@@ -27,9 +30,16 @@ le altre sono previste ma non ancora sviluppate.
 
 ## 5. Multiutente e condivisione
 - **[MVP]** Modello dati: `Card` (owner) + `CardShare` (utente destinatario, permesso view/edit).
-- **[MVP]** Condivisione diretta a utente registrato (by email).
-- **[MVP]** Link di invito con token e scadenza, per chi non è ancora registrato.
+- **[MVP]** Interfaccia di condivisione: pulsante "condividi" (⇪) su ogni carta posseduta,
+  apre un modal per condividere per username con permesso sola-lettura/modifica, vedere
+  con chi è già condivisa e rimuovere una condivisione.
+- **[MVP]** Link di invito con token e scadenza (72h di default), generabile dallo stesso
+  modal, per chi non ha ancora ricevuto una condivisione diretta ma ha già un account.
+  Accettarlo (pagina `/invite/:token`) richiede login: se non sei autenticato, l'app ti
+  manda al login e riprende automaticamente l'accettazione subito dopo.
 - Gruppi "famiglia": carte condivise automaticamente con tutti i membri del gruppo.
+- Invito via link utilizzabile anche da chi non ha ancora un account (oggi serve che
+  l'amministratore crei prima l'utente via CLI).
 
 ## 6. Gestione via web
 - **[MVP]** Stessa PWA responsive, utilizzabile da browser desktop.

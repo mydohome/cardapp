@@ -1,4 +1,4 @@
-import type { Card, Store } from "../types";
+import type { Card, Invite, Share, SharePermission, Store } from "../types";
 
 const API_BASE = "/api";
 
@@ -33,25 +33,25 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
 }
 
 export const api = {
-  async login(email: string, password: string) {
+  async login(usernameOrEmail: string, password: string) {
     const form = new URLSearchParams();
-    form.set("username", email);
+    form.set("username", usernameOrEmail);
     form.set("password", password);
     const res = await fetch(`${API_BASE}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: form,
     });
-    if (!res.ok) throw new Error("Email o password errati");
+    if (!res.ok) throw new Error("Utente o password errati");
     const data = await res.json();
     localStorage.setItem("access_token", data.access_token);
     return data;
   },
 
-  register(email: string, password: string, display_name?: string) {
+  register(username: string, password: string, email?: string, display_name?: string) {
     return request("/auth/register", {
       method: "POST",
-      body: JSON.stringify({ email, password, display_name }),
+      body: JSON.stringify({ username, password, email, display_name }),
     });
   },
 
@@ -81,10 +81,29 @@ export const api = {
     return request<PhotoRecognitionResult>("/cards/recognize-photo", { method: "POST", body: form });
   },
 
-  shareCard(cardId: string, email: string, permission: "view" | "edit" = "view") {
-    return request(`/cards/${cardId}/shares`, {
+  shareCard(cardId: string, username: string, permission: SharePermission = "view") {
+    return request<void>(`/cards/${cardId}/shares`, {
       method: "POST",
-      body: JSON.stringify({ email, permission }),
+      body: JSON.stringify({ username, permission }),
     });
+  },
+
+  listShares(cardId: string) {
+    return request<Share[]>(`/cards/${cardId}/shares`);
+  },
+
+  revokeShare(cardId: string, userId: string) {
+    return request<void>(`/cards/${cardId}/shares/${userId}`, { method: "DELETE" });
+  },
+
+  createInvite(cardId: string, permission: SharePermission = "view", expiresInHours = 72) {
+    return request<Invite>(`/cards/${cardId}/shares/invite`, {
+      method: "POST",
+      body: JSON.stringify({ permission, expires_in_hours: expiresInHours }),
+    });
+  },
+
+  acceptInvite(token: string) {
+    return request<{ status: string; card_id: string }>(`/invites/${token}/accept`, { method: "POST" });
   },
 };

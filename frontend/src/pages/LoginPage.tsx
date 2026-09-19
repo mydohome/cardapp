@@ -2,8 +2,10 @@ import { FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../lib/api";
 
+const PENDING_INVITE_KEY = "pending_invite_token";
+
 export default function LoginPage() {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -12,8 +14,15 @@ export default function LoginPage() {
     e.preventDefault();
     setError(null);
     try {
-      await api.login(email, password);
-      navigate("/");
+      await api.login(username, password);
+
+      const pendingInvite = sessionStorage.getItem(PENDING_INVITE_KEY);
+      if (pendingInvite) {
+        sessionStorage.removeItem(PENDING_INVITE_KEY);
+        navigate(`/invite/${pendingInvite}`);
+      } else {
+        navigate("/");
+      }
     } catch (err) {
       setError((err as Error).message);
     }
@@ -24,10 +33,12 @@ export default function LoginPage() {
       <form className="card-form" onSubmit={handleSubmit}>
         <h1>CardApp</h1>
         <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          type="text"
+          placeholder="Username o email"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          autoCapitalize="none"
+          autoCorrect="off"
           required
         />
         <input

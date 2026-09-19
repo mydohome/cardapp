@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.models import Card, CardShare, ShareInvite, User
-from app.schemas import ShareCreate, ShareInviteCreate, ShareInviteOut
+from app.schemas import ShareCreate, ShareInviteCreate, ShareInviteOut, ShareOut
 from app.security import get_current_user
 
 router = APIRouter(prefix="/api/cards/{card_id}/shares", tags=["shares"])
@@ -19,13 +19,29 @@ def _get_owned_card(card_id: str, db: Session, user: User) -> Card:
     return card
 
 
+@router.get("", response_model=list[ShareOut])
+def list_shares(card_id: str, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
+    card = _get_owned_card(card_id, db, user)
+    return [
+        ShareOut(
+            user_id=s.shared_with_user_id,
+            username=s.shared_with_user.username,
+            display_name=s.shared_with_user.display_name,
+            permission=s.permission,
+        )
+        for s in card.shares
+    ]
+
+
 @router.post("", status_code=201)
 def share_with_user(card_id: str, payload: ShareCreate, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
     card = _get_owned_card(card_id, db, user)
 
-    target = db.query(User).filter(User.email == payload.email).first()
+    target = db.query(User).filter(User.username == payload.username).first()
     if not target:
         raise HTTPException(status_code=404, detail="Utente non trovato: deve essere già registrato, altrimenti usa un link di invito")
+    if target.id == user.id:
+        raise HTTPException(status_code=400, detail="Non puoi condividere una carta con te stesso")
 
     existing = db.query(CardShare).filter(CardShare.card_id == card.id, CardShare.shared_with_user_id == target.id).first()
     if existing:

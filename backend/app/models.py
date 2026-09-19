@@ -25,7 +25,10 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column(UUID(as_uuid=False), primary_key=True, default=gen_uuid)
-    email = Column(String, unique=True, index=True, nullable=False)
+    username = Column(String, unique=True, index=True, nullable=False)
+    # Facoltativa di proposito: serve solo un nome utente semplice per accedere
+    # e per essere trovati da chi vuole condividere una carta.
+    email = Column(String, unique=True, index=True, nullable=True)
     hashed_password = Column(String, nullable=False)
     display_name = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
@@ -95,6 +98,7 @@ class CardShare(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
     card = relationship("Card", back_populates="shares")
+    shared_with_user = relationship("User")
 
 
 class ShareInvite(Base):

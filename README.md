@@ -47,7 +47,10 @@ docker compose exec backend python -m app.seed_stores
 
 Apre una CLI a menu (elenca, crea, cambia password, elimina) che gira dentro il
 container backend già avviato — rileva da solo se stai usando l'installazione di
-sviluppo o quella di produzione. In alternativa, direttamente:
+sviluppo o quella di produzione. Ogni utente ha un **username** semplice (3-32
+caratteri) come identificativo principale: l'email è facoltativa. Il login accetta
+sia l'username sia l'email, se impostata. L'username è anche ciò che si usa per
+condividere una carta con qualcuno. In alternativa, direttamente:
 
 ```bash
 docker compose exec backend python -m app.manage_users

@@ -1,22 +1,29 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 
 from app.models import BarcodeFormat, SharePermission
+
+# Nome utente semplice: lettere/cifre/punto/underscore/trattino, 3-32 caratteri.
+# Serve solo per login e per essere trovati da chi vuole condividere una carta;
+# l'email resta facoltativa.
+USERNAME_PATTERN = r"^[a-zA-Z0-9_.-]{3,32}$"
 
 
 # --- Auth ---
 
 class UserCreate(BaseModel):
-    email: EmailStr
+    username: str = Field(pattern=USERNAME_PATTERN)
     password: str
+    email: Optional[EmailStr] = None
     display_name: Optional[str] = None
 
 
 class UserOut(BaseModel):
     id: str
-    email: EmailStr
+    username: str
+    email: Optional[EmailStr] = None
     display_name: Optional[str] = None
 
     class Config:
@@ -67,7 +74,7 @@ class CardOut(BaseModel):
     photo_key: Optional[str] = None
     notes: Optional[str] = None
     updated_at: datetime
-    shared_by: Optional[str] = None  # email del proprietario, valorizzato solo per carte condivise
+    shared_by: Optional[str] = None  # nome del proprietario, valorizzato solo per carte condivise
 
     class Config:
         from_attributes = True
@@ -76,8 +83,15 @@ class CardOut(BaseModel):
 # --- Sharing ---
 
 class ShareCreate(BaseModel):
-    email: EmailStr
+    username: str
     permission: SharePermission = SharePermission.VIEW
+
+
+class ShareOut(BaseModel):
+    user_id: str
+    username: str
+    display_name: Optional[str] = None
+    permission: SharePermission
 
 
 class ShareInviteCreate(BaseModel):

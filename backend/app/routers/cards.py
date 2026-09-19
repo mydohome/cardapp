@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends, HTTPException, UploadFile
-from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -12,9 +11,9 @@ from app.storage import get_photo_url, upload_photo
 router = APIRouter(prefix="/api/cards", tags=["cards"])
 
 
-def _card_out(card: Card, shared_by_email: str | None = None) -> CardOut:
+def _card_out(card: Card, shared_by: str | None = None) -> CardOut:
     out = CardOut.model_validate(card)
-    out.shared_by = shared_by_email
+    out.shared_by = shared_by
     return out
 
 
@@ -35,7 +34,7 @@ def list_cards(db: Session = Depends(get_db), user: User = Depends(get_current_u
 
     result = [_card_out(c) for c in own]
     for c in shared:
-        result.append(_card_out(c, shared_by_email=c.owner.email))
+        result.append(_card_out(c, shared_by=c.owner.display_name or c.owner.username))
     return result
 
 
