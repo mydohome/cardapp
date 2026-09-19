@@ -94,7 +94,9 @@ same-origin e non serve esporre il backend separatamente su NPM.
 - Solo `web` è collegato sia a `proxy-net` che a `backend`, facendo da unico
   varco tra l'esterno e lo stack interno.
 - `cap_drop: ALL` è applicato ad `app` e `backup` (servizi stateless che non
-  necessitano di capability Linux particolari). Non è applicato a
+  necessitano di capability Linux particolari); `backup` si riaggiunge solo
+  `DAC_OVERRIDE`, perché `./backups` sull'host può appartenere all'utente
+  che ha lanciato `install.sh` e non a root. Non è applicato a
   `web`/`db`/`redis`: le rispettive immagini ufficiali eseguono operazioni
   privilegiate all'avvio (nginx fa `chown` delle cartelle di cache e deve
   abbassare i privilegi dei worker; postgres/redis possono doverlo fare

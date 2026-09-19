@@ -126,6 +126,13 @@ services:
       - no-new-privileges:true
     cap_drop:
       - ALL
+    # DAC_OVERRIDE: ./backups sull'host puo' essere di proprieta' dell'utente
+    # che ha lanciato install.sh (non root): senza questa capability, root
+    # dentro al container non riesce a scriverci ("Permission denied" al
+    # primo mkdir del backup), perche' cap_drop: ALL toglie anche il
+    # bypass dei permessi Unix di cui root normalmente gode.
+    cap_add:
+      - DAC_OVERRIDE
     mem_limit: 128m
     cpus: 0.25
     logging:
