@@ -1,15 +1,20 @@
-# L'immagine ufficiale "minio/minio" non e' piu' liberamente scaricabile da
-# Docker Hub (il pull viene rifiutato con "denied: requested access to the
-# resource is denied" anche per utenti anonimi). Per non dipendere dalla
-# policy di un registry di terzi, costruiamo il server MinIO direttamente
-# dal binario ufficiale pubblicato da MinIO stesso via HTTPS.
+# Sia l'immagine ufficiale "minio/minio" su Docker Hub (pull negato anche in
+# anonimo) sia il binario precompilato su dl.min.io (risponde 410 Gone) non
+# sono piu' liberamente scaricabili. MinIO resta pero' open source (AGPLv3):
+# lo compiliamo dal sorgente ufficiale con Go, che non dipende da nessuna
+# delle due distribuzioni chiuse. Il primo build è più lento (compila da
+# sorgente), i successivi riusano la cache dei layer Docker.
+FROM golang:1.24-alpine AS build
+
+RUN apk add --no-cache git
+
+ENV CGO_ENABLED=0
+RUN go install github.com/minio/minio@RELEASE.2025-10-15T17-29-55Z
+
 FROM alpine:3.20
 
-ARG TARGETARCH
-
-RUN apk add --no-cache ca-certificates curl && \
-    curl -fsSL -o /usr/local/bin/minio "https://dl.min.io/server/minio/release/linux-${TARGETARCH}/minio" && \
-    chmod +x /usr/local/bin/minio
+RUN apk add --no-cache ca-certificates curl
+COPY --from=build /go/bin/minio /usr/local/bin/minio
 
 EXPOSE 9000 9001
 ENTRYPOINT ["minio"]
