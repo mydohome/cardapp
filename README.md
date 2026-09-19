@@ -12,11 +12,21 @@ Dettaglio delle funzionalità (implementate e pianificate): [docs/FUNCTIONALITY.
 ## Avvio rapido
 
 ```bash
-cp .env.example .env
-# modifica .env con password/segreti reali
-
-docker compose up --build
+./install.sh
 ```
+
+Chiede se preparare l'installazione di sviluppo (root, questa sezione) o quella di
+produzione dietro Nginx Proxy Manager ([deploy/](deploy/README.md)), genera un `.env`
+con password/segreti sicuri creati automaticamente (non serve inventarli né ricordarli),
+prepara le directory necessarie e verifica che tutto sia a posto. Alla fine stampa il
+comando da lanciare, tipicamente:
+
+```bash
+docker compose up -d --build
+```
+
+In alternativa, per farlo a mano: `cp .env.example .env`, valorizza i segreti a mano,
+poi `docker compose up --build`.
 
 Servizi esposti:
 - `http://localhost` → app (frontend + `/api/*` verso il backend, tramite Caddy)
@@ -27,6 +37,20 @@ automatica del logo):
 
 ```bash
 docker compose exec backend python -m app.seed_stores
+```
+
+## Gestione utenti
+
+```bash
+./manage-users.sh
+```
+
+Apre una CLI a menu (elenca, crea, cambia password, elimina) che gira dentro il
+container backend già avviato — rileva da solo se stai usando l'installazione di
+sviluppo o quella di produzione. In alternativa, direttamente:
+
+```bash
+docker compose exec backend python -m app.manage_users
 ```
 
 ## Testare lo scan da iPhone reale
@@ -78,12 +102,14 @@ gestisce TLS e reverse proxy su una rete Docker condivisa, usa invece
 ## Struttura repo
 
 ```
-backend/    API FastAPI (auth, carte, negozi, condivisioni, OCR/riconoscimento)
-frontend/   PWA React/Vite (ricerca istantanea, scan, barcode fullscreen)
-backup/     Script e container di backup/restore schedulati
-deploy/     Compose di produzione dietro Nginx Proxy Manager
-docs/       Specifica funzionale dettagliata
-Caddyfile   Reverse proxy + terminazione HTTPS (solo per lo stack di sviluppo)
+backend/          API FastAPI (auth, carte, negozi, condivisioni, OCR/riconoscimento)
+frontend/         PWA React/Vite (ricerca istantanea, scan, barcode fullscreen)
+backup/           Script e container di backup/restore schedulati
+deploy/           Compose di produzione dietro Nginx Proxy Manager
+docs/             Specifica funzionale dettagliata
+Caddyfile         Reverse proxy + terminazione HTTPS (solo per lo stack di sviluppo)
+install.sh        Installazione guidata (sceglie dev/prod, genera .env con segreti)
+manage-users.sh   Apre la CLI di gestione utenti nel container backend
 ```
 
 ## Stato del progetto

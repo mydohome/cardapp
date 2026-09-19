@@ -39,6 +39,18 @@ app:
 
 ## 3. Configurazione
 
+Dalla radice del repo:
+
+```bash
+./install.sh
+```
+
+Scegli l'opzione "2) Produzione dietro Nginx Proxy Manager": genera `deploy/.env` con
+password/segreti sicuri creati automaticamente, crea `db/data`, `redis/data`,
+`minio/data`, `backups`, e offre di creare la rete `proxy-net` se manca.
+
+In alternativa, a mano:
+
 ```bash
 cp .env.example .env
 # valorizza .env con segreti reali (password DB/MinIO, JWT_SECRET, ecc.)
@@ -49,9 +61,12 @@ mkdir -p db/data redis/data minio/data backups
 ## 4. Avvio
 
 ```bash
-docker compose up -d
+docker compose up -d --build
 docker compose exec app python -m app.seed_stores   # popola il catalogo negozi
 ```
+
+Per creare/gestire utenti, dalla radice del repo: `./manage-users.sh` (rileva da solo
+che questa è l'installazione di produzione).
 
 ## 5. Proxy Host in NPM
 
