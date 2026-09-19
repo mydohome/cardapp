@@ -1,10 +1,34 @@
-import { BrowserMultiFormatReader } from "@zxing/browser";
+import { BarcodeFormat as ZXingFormat, BrowserMultiFormatReader } from "@zxing/browser";
+import type { Result } from "@zxing/library";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../lib/api";
 import { refreshCards } from "../lib/cardCache";
 import { useOnlineStatus } from "../lib/useOnlineStatus";
-import type { Store } from "../types";
+import type { BarcodeFormat, Store } from "../types";
+
+const ZXING_FORMAT_MAP: Partial<Record<ZXingFormat, BarcodeFormat>> = {
+  [ZXingFormat.EAN_13]: "EAN13",
+  [ZXingFormat.EAN_8]: "EAN8",
+  [ZXingFormat.CODE_128]: "CODE128",
+  [ZXingFormat.CODE_39]: "CODE39",
+  [ZXingFormat.QR_CODE]: "QRCODE",
+  [ZXingFormat.PDF_417]: "PDF417",
+  [ZXingFormat.AZTEC]: "AZTEC",
+  [ZXingFormat.CODABAR]: "CODABAR",
+};
+
+/** Normalizza il risultato dello scan: UPC-A e' letteralmente un EAN-13 a cui
+ * e' stato tolto lo "0" iniziale (il "system digit"). ZXing spesso preferisce
+ * riconoscere come UPC-A un barcode fisicamente EAN-13 che comincia per 0,
+ * facendo sparire quella cifra se non la ripristiniamo qui. */
+function normalizeScanResult(result: Result): { value: string; format: BarcodeFormat } {
+  const zxingFormat = result.getBarcodeFormat();
+  if (zxingFormat === ZXingFormat.UPC_A) {
+    return { value: `0${result.getText()}`, format: "EAN13" };
+  }
+  return { value: result.getText(), format: ZXING_FORMAT_MAP[zxingFormat] ?? "CODE128" };
+}
 
 export default function ScanCardPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -13,6 +37,7 @@ export default function ScanCardPage() {
   const online = useOnlineStatus();
 
   const [barcodeValue, setBarcodeValue] = useState("");
+  const [barcodeFormat, setBarcodeFormat] = useState<BarcodeFormat>("EAN13");
   const [label, setLabel] = useState("");
   const [store, setStore] = useState<Store | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -28,7 +53,9 @@ export default function ScanCardPage() {
         videoRef.current!,
         (result) => {
           if (result) {
-            setBarcodeValue(result.getText());
+            const normalized = normalizeScanResult(result);
+            setBarcodeValue(normalized.value);
+            setBarcodeFormat(normalized.format);
           }
         }
       )
@@ -44,6 +71,7 @@ export default function ScanCardPage() {
     try {
       const result = await api.recognizePhoto(file);
       if (result.decoded_barcode_value) setBarcodeValue(result.decoded_barcode_value);
+      if (result.decoded_barcode_format) setBarcodeFormat(result.decoded_barcode_format as BarcodeFormat);
       if (result.matched_store) {
         setStore(result.matched_store);
         setLabel(result.matched_store.name);
@@ -60,7 +88,7 @@ export default function ScanCardPage() {
       await api.createCard({
         label,
         barcode_value: barcodeValue,
-        barcode_format: "EAN13",
+        barcode_format: barcodeFormat,
         store_id: store?.id,
       });
       await refreshCards();

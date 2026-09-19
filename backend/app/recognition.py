@@ -37,6 +37,13 @@ def decode_barcode(image_bytes: bytes):
         return None, None
     result = results[0]
     value = result.data.decode("utf-8", errors="ignore")
+
+    if result.type == "UPCA":
+        # UPC-A e' letteralmente un EAN-13 senza il suo "0" iniziale (system
+        # digit): lo ripristiniamo per non perdere quella cifra che il
+        # barcode fisico ha davvero stampata.
+        return f"0{value}", BarcodeFormat.EAN13
+
     fmt = _ZBAR_TO_FORMAT.get(result.type, BarcodeFormat.CODE128)
     return value, fmt
 
