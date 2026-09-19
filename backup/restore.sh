@@ -16,6 +16,8 @@ if [ ! -d "${SRC}" ]; then
   exit 1
 fi
 
+DB_HOST="${DB_HOST:-postgres}"
+
 echo "[restore] ATTENZIONE: questa operazione sovrascrive il database e i file attuali."
 read -p "Continuare? (scrivi 'si' per confermare) " CONFIRM
 if [ "${CONFIRM}" != "si" ]; then
@@ -25,7 +27,7 @@ fi
 
 echo "[restore] Ripristino PostgreSQL da ${SRC}/postgres.dump..."
 PGPASSWORD="${POSTGRES_PASSWORD}" pg_restore \
-  -h postgres -U "${POSTGRES_USER}" -d "${POSTGRES_DB}" \
+  -h "${DB_HOST}" -U "${POSTGRES_USER}" -d "${POSTGRES_DB}" \
   --clean --if-exists "${SRC}/postgres.dump"
 
 echo "[restore] Ripristino dati MinIO da ${SRC}/minio_data.tar.gz..."

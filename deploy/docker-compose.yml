@@ -1,0 +1,169 @@
+# Deploy di produzione dietro Nginx Proxy Manager (NPM).
+#
+# Presupposti:
+# - Esiste gia' una rete Docker esterna "proxy-net" condivisa con lo stack di NPM
+#   (crearla una tantum con: docker network create proxy-net).
+# - Le immagini "app" (backend) e "web" (frontend) sono gia' state buildate e
+#   pubblicate su una registry (vedi deploy/README.md), oppure sostituisci
+#   "image:" con "build: ../backend" / "build: ../frontend" per buildarle
+#   direttamente sull'host di produzione.
+# - In NPM crei un solo Proxy Host che punta a "cardapp-web:80": il frontend
+#   fa da unico punto di ingresso e instrada internamente /api/* al backend
+#   (vedi frontend/nginx.conf.template), cosi' l'app resta same-origin.
+
+services:
+  web:
+    image: ghcr.io/mydohome/cardapp-frontend:latest
+    container_name: cardapp-web
+    restart: unless-stopped
+    environment:
+      BACKEND_UPSTREAM: app:8000
+    networks:
+      - proxy-net
+      - backend
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    mem_limit: 256m
+    cpus: 0.5
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    depends_on:
+      - app
+
+  app:
+    image: ghcr.io/mydohome/cardapp-backend:latest
+    container_name: cardapp-app
+    restart: unless-stopped
+    env_file:
+      - .env
+    networks:
+      - backend
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    mem_limit: 512m
+    cpus: 1.0
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    depends_on:
+      db:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  db:
+    image: postgres:16-alpine
+    container_name: cardapp-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - ./db/data:/var/lib/postgresql/data
+    networks:
+      - backend
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 512m
+    cpus: 1.0
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: cardapp-redis
+    restart: unless-stopped
+    volumes:
+      - ./redis/data:/data
+    networks:
+      - backend
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 128m
+    cpus: 0.25
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  minio:
+    image: minio/minio:latest
+    container_name: cardapp-minio
+    restart: unless-stopped
+    command: server /data
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    volumes:
+      - ./minio/data:/data
+    networks:
+      - backend
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 512m
+    cpus: 0.5
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Backup locale schedulato (pg_dump + tar dei dati MinIO). Non serve
+  # pubblicarlo su una registry: viene buildato direttamente dal sorgente.
+  backup:
+    build: ../backup
+    container_name: cardapp-backup
+    restart: unless-stopped
+    env_file:
+      - .env
+    networks:
+      - backend
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    mem_limit: 128m
+    cpus: 0.25
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    volumes:
+      - ./minio/data:/minio_data
+      - ./backups:/backups
+    depends_on:
+      - db
+      - minio
+
+networks:
+  proxy-net:
+    external: true
+  backend:
+    internal: true

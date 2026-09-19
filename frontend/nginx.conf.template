@@ -1,0 +1,29 @@
+server {
+    listen 80;
+    root /usr/share/nginx/html;
+    index index.html;
+
+    # Risolutore DNS interno di Docker: permette a nginx di ri-risolvere
+    # l'host del backend a runtime invece che una sola volta all'avvio,
+    # cosi' l'ordine di startup dei container non e' un problema.
+    resolver 127.0.0.11 valid=30s;
+
+    # BACKEND_UPSTREAM e' sostituito da envsubst all'avvio del container
+    # (vedi Dockerfile). In dev (docker-compose.yml) il servizio si chiama
+    # "backend", in produzione dietro NPM (deploy/docker-compose.yml) "app":
+    # questo location e' comunque inerte in dev perche' li' e' Caddy a
+    # instradare /api/* direttamente al backend, bypassando nginx.
+    location /api/ {
+        set $backend "${BACKEND_UPSTREAM}";
+        proxy_pass http://$backend/api/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # SPA: qualsiasi rotta non-file rimanda a index.html (React Router)
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}

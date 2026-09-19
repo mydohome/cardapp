@@ -50,14 +50,23 @@ tranne che su `localhost`. Per testare da un iPhone in rete locale:
   docker compose exec backup /usr/local/bin/restore.sh <timestamp_backup>
   ```
 
+## Deploy di produzione (dietro Nginx Proxy Manager)
+
+Il `docker-compose.yml` alla radice è pensato per sviluppo/uso locale (con Caddy
+incluso). Per un deploy su un host dove gira già **Nginx Proxy Manager**, che
+gestisce TLS e reverse proxy su una rete Docker condivisa, usa invece
+[deploy/docker-compose.yml](deploy/docker-compose.yml) — istruzioni complete in
+[deploy/README.md](deploy/README.md).
+
 ## Struttura repo
 
 ```
 backend/    API FastAPI (auth, carte, negozi, condivisioni, OCR/riconoscimento)
 frontend/   PWA React/Vite (ricerca istantanea, scan, barcode fullscreen)
 backup/     Script e container di backup/restore schedulati
+deploy/     Compose di produzione dietro Nginx Proxy Manager
 docs/       Specifica funzionale dettagliata
-Caddyfile   Reverse proxy + terminazione HTTPS
+Caddyfile   Reverse proxy + terminazione HTTPS (solo per lo stack di sviluppo)
 ```
 
 ## Stato del progetto
