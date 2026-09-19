@@ -114,6 +114,10 @@ services:
     build: ../backup
     container_name: cardapp-backup
     restart: unless-stopped
+    # crond gira come PID 1: senza un init, il kernel nega alcune operazioni
+    # sui gruppi di processo quando lancia i job ("setpgid: Operation not
+    # permitted"). init: true fa iniettare a Docker un mini-init (tini).
+    init: true
     env_file:
       - .env
     networks:
