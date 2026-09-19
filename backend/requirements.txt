@@ -4,6 +4,9 @@ sqlalchemy==2.0.35
 psycopg2-binary==2.9.9
 pydantic==2.9.2
 pydantic-settings==2.5.2
+# Richiesto da pydantic.EmailStr (usato in schemas.py): senza questo pacchetto
+# l'app non si avvia proprio (ImportError al primo import di schemas.py).
+email-validator==2.2.0
 python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
 # passlib 1.7.4 non e' compatibile con bcrypt >= 4.1 (rimuove un attributo
@@ -13,7 +16,6 @@ passlib[bcrypt]==1.7.4
 bcrypt==4.0.1
 python-multipart==0.0.9
 redis==5.0.8
-boto3==1.35.24
 Pillow==10.4.0
 pytesseract==0.3.13
 pyzbar==0.1.9

@@ -4,8 +4,9 @@ PWA per la gestione delle carte fedeltà: scansione barcode da fotocamera iPhone
 riconoscimento automatico negozio/logo da foto, condivisione carte tra utenti,
 gestione via web, backup e ripristino locali.
 
-Stack: FastAPI (backend) + React/Vite PWA (frontend) + PostgreSQL + MinIO + Redis,
-il tutto orchestrato con Docker Compose dietro un reverse proxy Caddy.
+Stack: FastAPI (backend) + React/Vite PWA (frontend) + PostgreSQL + Redis,
+foto delle carte salvate su disco locale, il tutto orchestrato con Docker
+Compose dietro un reverse proxy Caddy.
 
 Dettaglio delle funzionalità (implementate e pianificate): [docs/FUNCTIONALITY.md](docs/FUNCTIONALITY.md).
 
@@ -30,7 +31,6 @@ poi `docker compose up --build`.
 
 Servizi esposti:
 - `http://localhost` → app (frontend + `/api/*` verso il backend, tramite Caddy)
-- `http://localhost:9000` (se esponi la porta) → console MinIO
 
 Popola il catalogo negozi di base (nomi principali catene IT, usato per l'associazione
 automatica del logo):

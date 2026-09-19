@@ -1,34 +1,28 @@
+"""Storage locale su filesystem per le foto delle carte.
+
+Usiamo il disco invece di un object storage (S3/MinIO) perche' l'unico
+bisogno e' salvare le foto caricate durante lo scan: niente qui richiede
+semantica S3 (bucket, versioning, multi-regione), e un servizio in meno
+da mantenere/buildare per un uso self-hosted personale/familiare.
+"""
+
+import mimetypes
 import uuid
+from pathlib import Path
 
-import boto3
-from botocore.client import Config as BotoConfig
-
-from app.config import settings
-
-_s3 = boto3.client(
-    "s3",
-    endpoint_url=f"http://{settings.minio_endpoint}",
-    aws_access_key_id=settings.minio_root_user,
-    aws_secret_access_key=settings.minio_root_password,
-    config=BotoConfig(signature_version="s3v4"),
-)
+STORAGE_ROOT = Path("/data/uploads")
 
 
-def ensure_bucket():
-    existing = [b["Name"] for b in _s3.list_buckets().get("Buckets", [])]
-    if settings.minio_bucket not in existing:
-        _s3.create_bucket(Bucket=settings.minio_bucket)
+def ensure_storage_dir() -> None:
+    (STORAGE_ROOT / "card-photos").mkdir(parents=True, exist_ok=True)
 
 
 def upload_photo(content: bytes, content_type: str) -> str:
-    key = f"card-photos/{uuid.uuid4()}"
-    _s3.put_object(Bucket=settings.minio_bucket, Key=key, Body=content, ContentType=content_type)
+    extension = mimetypes.guess_extension(content_type) or ""
+    key = f"card-photos/{uuid.uuid4()}{extension}"
+    (STORAGE_ROOT / key).write_bytes(content)
     return key
 
 
-def get_photo_url(key: str, expires_in: int = 3600) -> str:
-    return _s3.generate_presigned_url(
-        "get_object",
-        Params={"Bucket": settings.minio_bucket, "Key": key},
-        ExpiresIn=expires_in,
-    )
+def get_photo_path(key: str) -> Path:
+    return STORAGE_ROOT / key

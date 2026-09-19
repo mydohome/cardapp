@@ -42,6 +42,8 @@ services:
     restart: unless-stopped
     env_file:
       - .env
+    volumes:
+      - ./uploads/data:/data/uploads
     networks:
       - backend
     security_opt:
@@ -57,8 +59,6 @@ services:
         max-file: "3"
     depends_on:
       db:
-        condition: service_healthy
-      minio:
         condition: service_healthy
       redis:
         condition: service_started
@@ -108,34 +108,7 @@ services:
         max-size: "10m"
         max-file: "3"
 
-  minio:
-    build: ../minio
-    container_name: cardapp-minio
-    restart: unless-stopped
-    command: server /data
-    environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
-    volumes:
-      - ./minio/data:/data
-    networks:
-      - backend
-    security_opt:
-      - no-new-privileges:true
-    mem_limit: 512m
-    cpus: 0.5
-    logging:
-      driver: json-file
-      options:
-        max-size: "10m"
-        max-file: "3"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
-
-  # Backup locale schedulato (pg_dump + tar dei dati MinIO). Non serve
+  # Backup locale schedulato (pg_dump + tar delle foto caricate). Non serve
   # pubblicarlo su una registry: viene buildato direttamente dal sorgente.
   backup:
     build: ../backup
@@ -157,11 +130,10 @@ services:
         max-size: "10m"
         max-file: "3"
     volumes:
-      - ./minio/data:/minio_data
+      - ./uploads/data:/uploads_data
       - ./backups:/backups
     depends_on:
       - db
-      - minio
 
 networks:
   proxy-net:

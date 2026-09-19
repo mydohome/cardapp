@@ -30,8 +30,8 @@ PGPASSWORD="${POSTGRES_PASSWORD}" pg_restore \
   -h "${DB_HOST}" -U "${POSTGRES_USER}" -d "${POSTGRES_DB}" \
   --clean --if-exists "${SRC}/postgres.dump"
 
-echo "[restore] Ripristino dati MinIO da ${SRC}/minio_data.tar.gz..."
-rm -rf /minio_data/*
-tar -xzf "${SRC}/minio_data.tar.gz" -C /minio_data
+echo "[restore] Ripristino foto carte da ${SRC}/uploads.tar.gz..."
+rm -rf /uploads_data/*
+tar -xzf "${SRC}/uploads.tar.gz" -C /uploads_data
 
-echo "[restore] Completato. Riavvia i servizi backend/minio per applicare i dati."
+echo "[restore] Completato. Riavvia il servizio backend per applicare i dati."

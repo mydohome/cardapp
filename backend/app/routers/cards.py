@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, UploadFile
+from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -6,7 +7,7 @@ from app.models import Card, CardShare, SharePermission, User
 from app.recognition import decode_barcode, extract_text, match_store
 from app.schemas import CardCreate, CardOut, CardUpdate, PhotoRecognitionResult
 from app.security import get_current_user
-from app.storage import get_photo_url, upload_photo
+from app.storage import get_photo_path, upload_photo
 
 router = APIRouter(prefix="/api/cards", tags=["cards"])
 
@@ -63,6 +64,22 @@ def _get_editable_card(card_id: str, db: Session, user: User) -> Card:
     raise HTTPException(status_code=403, detail="Non hai i permessi per modificare questa carta")
 
 
+def _get_readable_card(card_id: str, db: Session, user: User) -> Card:
+    card = db.query(Card).filter(Card.id == card_id).first()
+    if not card:
+        raise HTTPException(status_code=404, detail="Carta non trovata")
+    if card.owner_id == user.id:
+        return card
+    share = (
+        db.query(CardShare)
+        .filter(CardShare.card_id == card_id, CardShare.shared_with_user_id == user.id)
+        .first()
+    )
+    if share:
+        return card
+    raise HTTPException(status_code=403, detail="Non hai accesso a questa carta")
+
+
 @router.patch("/{card_id}", response_model=CardOut)
 def update_card(card_id: str, payload: CardUpdate, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
     card = _get_editable_card(card_id, db, user)
@@ -93,12 +110,15 @@ async def upload_card_photo(card_id: str, file: UploadFile, db: Session = Depend
     return _card_out(card)
 
 
-@router.get("/{card_id}/photo-url")
-def card_photo_url(card_id: str, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
-    card = db.query(Card).filter(Card.id == card_id).first()
-    if not card or not card.photo_key:
+@router.get("/{card_id}/photo")
+def card_photo(card_id: str, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
+    card = _get_readable_card(card_id, db, user)
+    if not card.photo_key:
         raise HTTPException(status_code=404, detail="Foto non trovata")
-    return {"url": get_photo_url(card.photo_key)}
+    path = get_photo_path(card.photo_key)
+    if not path.is_file():
+        raise HTTPException(status_code=404, detail="Foto non trovata")
+    return FileResponse(path)
 
 
 @router.post("/recognize-photo", response_model=PhotoRecognitionResult)

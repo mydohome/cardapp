@@ -58,8 +58,6 @@ if [ -z "${SKIP_ENV:-}" ]; then
   POSTGRES_USER="cardapp"
   POSTGRES_DB="cardapp"
   POSTGRES_PASSWORD="$(gen_secret)"
-  MINIO_ROOT_USER="cardapp"
-  MINIO_ROOT_PASSWORD="$(gen_secret)"
   JWT_SECRET="$(gen_secret)$(gen_secret)"
 
   cat > "$ENV_FILE" <<EOF
@@ -73,11 +71,6 @@ DATABASE_URL=postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DB_HO
 DB_HOST=${DB_HOST}
 
 REDIS_URL=redis://redis:6379/0
-
-MINIO_ROOT_USER=${MINIO_ROOT_USER}
-MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
-MINIO_BUCKET=cardapp-media
-MINIO_ENDPOINT=minio:9000
 
 JWT_SECRET=${JWT_SECRET}
 JWT_ALGORITHM=HS256
@@ -97,7 +90,7 @@ echo
 echo "Preparo le directory necessarie..."
 mkdir -p "$TARGET_DIR/backups"
 if [ "$MODE" = "2" ]; then
-  mkdir -p "$TARGET_DIR/db/data" "$TARGET_DIR/redis/data" "$TARGET_DIR/minio/data"
+  mkdir -p "$TARGET_DIR/db/data" "$TARGET_DIR/redis/data" "$TARGET_DIR/uploads/data"
 
   if command -v docker >/dev/null 2>&1; then
     if ! docker network inspect proxy-net >/dev/null 2>&1; then

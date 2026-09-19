@@ -51,15 +51,15 @@ Dalla radice del repo:
 
 Scegli l'opzione "2) Produzione dietro Nginx Proxy Manager": genera `deploy/.env` con
 password/segreti sicuri creati automaticamente, crea `db/data`, `redis/data`,
-`minio/data`, `backups`, e offre di creare la rete `proxy-net` se manca.
+`uploads/data`, `backups`, e offre di creare la rete `proxy-net` se manca.
 
 In alternativa, a mano:
 
 ```bash
 cp .env.example .env
-# valorizza .env con segreti reali (password DB/MinIO, JWT_SECRET, ecc.)
+# valorizza .env con segreti reali (password DB, JWT_SECRET, ecc.)
 
-mkdir -p db/data redis/data minio/data backups
+mkdir -p db/data redis/data uploads/data backups
 ```
 
 ## 4. Avvio
@@ -89,20 +89,27 @@ same-origin e non serve esporre il backend separatamente su NPM.
 ## Note sulla sicurezza di rete
 
 - `backend` è una rete `internal: true`: i container `app`, `db`, `redis`,
-  `minio`, `backup` non hanno accesso a Internet né sono raggiungibili
+  `backup` non hanno accesso a Internet né sono raggiungibili
   dall'esterno, solo tra loro.
 - Solo `web` è collegato sia a `proxy-net` che a `backend`, facendo da unico
   varco tra l'esterno e lo stack interno.
 - `cap_drop: ALL` è applicato a `web`, `app` e `backup` (servizi stateless
   che non necessitano di capability Linux particolari). Non è applicato a
-  `db`/`redis`/`minio` perché le rispettive immagini ufficiali possono avere
+  `db`/`redis` perché le rispettive immagini ufficiali possono avere
   bisogno di operazioni privilegiate alla prima inizializzazione del volume
   dati (es. `chown`).
 
+## Storage foto carte
+
+Le foto caricate durante lo scan sono salvate su disco dal container `app`
+in `./uploads/data` (bind mount, non un object storage): per un uso
+self-hosted personale/familiare non serve la semantica S3, ed è un servizio
+in meno da mantenere.
+
 ## Backup
 
-Il container `backup` esegue ogni notte (cron) un `pg_dump` + archivio dei
-dati MinIO in `./backups/<timestamp>/`, con rotazione automatica (`BACKUP_KEEP_LAST`
+Il container `backup` esegue ogni notte (cron) un `pg_dump` + archivio delle
+foto carte in `./backups/<timestamp>/`, con rotazione automatica (`BACKUP_KEEP_LAST`
 in `.env`). Ripristino manuale:
 
 ```bash

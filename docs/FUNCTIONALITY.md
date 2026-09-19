@@ -46,7 +46,7 @@ le altre sono previste ma non ancora sviluppate.
 - Pannello amministrativo per il catalogo negozi/loghi (merge duplicati, upload logo manuale).
 
 ## 7. Backup e ripristino (locale)
-- **[MVP]** Container `backup` schedulato (cron) → `pg_dump` + tar dei dati MinIO su `./backups`.
+- **[MVP]** Container `backup` schedulato (cron) → `pg_dump` + tar delle foto carte su `./backups`.
 - **[MVP]** Rotazione automatica (mantiene ultimi N backup, configurabile via `BACKUP_KEEP_LAST`).
 - **[MVP]** Script `restore.sh` per ripristino manuale da un backup specifico.
 - Export utente singolo (zip con metadati + immagini), scaricabile dall'app.

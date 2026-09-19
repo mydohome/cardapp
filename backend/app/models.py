@@ -71,7 +71,7 @@ class Card(Base):
     label = Column(String, nullable=False)  # nome mostrato, es. "Esselunga Fidaty"
     barcode_value = Column(String, nullable=False)
     barcode_format = Column(Enum(BarcodeFormat), default=BarcodeFormat.EAN13)
-    photo_key = Column(String, nullable=True)  # chiave oggetto su MinIO
+    photo_key = Column(String, nullable=True)  # percorso relativo sotto STORAGE_ROOT
     notes = Column(String, nullable=True)
 
     created_at = Column(DateTime, default=datetime.utcnow)

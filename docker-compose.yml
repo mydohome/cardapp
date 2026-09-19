@@ -18,29 +18,14 @@ services:
     image: redis:7-alpine
     restart: unless-stopped
 
-  minio:
-    build: ./minio
-    restart: unless-stopped
-    command: server /data
-    environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
-    volumes:
-      - minio_data:/data
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
-
   backend:
     build: ./backend
     restart: unless-stopped
     env_file: .env
+    volumes:
+      - uploads_data:/data/uploads
     depends_on:
       postgres:
-        condition: service_healthy
-      minio:
         condition: service_healthy
       redis:
         condition: service_started
@@ -70,12 +55,11 @@ services:
     env_file: .env
     depends_on:
       - postgres
-      - minio
     volumes:
-      - minio_data:/minio_data
+      - uploads_data:/uploads_data
       - ./backups:/backups
 
 volumes:
   postgres_data:
-  minio_data:
+  uploads_data:
   caddy_data:

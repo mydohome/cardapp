@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import Base, engine
 from app.routers import auth, cards, invites, shares, stores
-from app.storage import ensure_bucket
+from app.storage import ensure_storage_dir
 
 app = FastAPI(title="CardApp API")
 
@@ -26,7 +26,7 @@ def on_startup():
     # MVP: crea le tabelle direttamente dai modelli.
     # Da sostituire con Alembic non appena servono migrazioni incrementali.
     Base.metadata.create_all(bind=engine)
-    ensure_bucket()
+    ensure_storage_dir()
 
 
 @app.get("/api/health")
