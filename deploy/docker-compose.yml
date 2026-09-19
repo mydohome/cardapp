@@ -26,7 +26,15 @@ services:
     container_name: cardapp-web
     restart: unless-stopped
     environment:
-      BACKEND_UPSTREAM: app:8000
+      # Il nome del CONTAINER ("cardapp-app"), non del servizio ("app"):
+      # "web" e' collegato anche a "proxy-net", condivisa con altre app su
+      # questo host. Se una di loro chiama il proprio servizio anch'essa
+      # "app" (capitato davvero, con un'app completamente diversa), Docker
+      # registra lo stesso alias generico "app" anche li', e la risoluzione
+      # DNS puo' restituire quel container invece del nostro backend
+      # ("Connection refused" verso un servizio a caso). Il nome del
+      # container e' esplicito e non puo' collidere con nulla sull'host.
+      BACKEND_UPSTREAM: cardapp-app:8000
     networks:
       - proxy-net
       - backend
