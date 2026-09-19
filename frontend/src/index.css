@@ -132,6 +132,16 @@ button:disabled {
   color: #9ca3af;
 }
 
+.offline-banner {
+  background: #78350f;
+  color: #fef3c7;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
 .fullscreen-barcode {
   min-height: 100vh;
   background: white;

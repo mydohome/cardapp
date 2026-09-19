@@ -12,7 +12,10 @@ class Settings(BaseSettings):
 
     jwt_secret: str = "change_this_to_a_long_random_string"
     jwt_algorithm: str = "HS256"
-    access_token_expire_minutes: int = 30
+    # Non c'e' ancora un refresh-token flow: l'access token e' l'unica credenziale.
+    # Scadenza lunga di proposito, perche' l'uso offline (mostrare le carte gia'
+    # sincronizzate) deve restare possibile per giorni senza dover rifare login.
+    access_token_expire_minutes: int = 60 * 24 * 14  # 14 giorni
     refresh_token_expire_days: int = 30
 
     class Config:

@@ -22,9 +22,24 @@ export default defineConfig({
         ],
       },
       workbox: {
-        // Le carte vengono cachate via IndexedDB dall'app stessa (vedi src/lib/store.ts);
-        // qui cachiamo solo l'app shell per consentire l'avvio offline.
+        // Precache dell'app shell (JS/CSS/HTML): permette all'app di avviarsi
+        // completamente offline. I dati delle carte sono cachati separatamente
+        // dall'app stessa in localStorage (vedi src/lib/cardCache.ts).
         globPatterns: ["**/*.{js,css,html,svg,png,ico}"],
+        runtimeCaching: [
+          {
+            // Loghi negozio: possono provenire da domini esterni, quindi non
+            // rientrano nel precache dell'app shell. CacheFirst li rende
+            // disponibili offline dopo il primo caricamento andato a buon fine.
+            urlPattern: ({ request }) => request.destination === "image",
+            handler: "CacheFirst",
+            options: {
+              cacheName: "store-logos",
+              expiration: { maxEntries: 200, maxAgeSeconds: 60 * 60 * 24 * 30 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+        ],
       },
     }),
   ],

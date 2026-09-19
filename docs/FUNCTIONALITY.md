@@ -42,9 +42,32 @@ le altre sono previste ma non ancora sviluppate.
 - Export utente singolo (zip con metadati + immagini), scaricabile dall'app.
 
 ## 8. PWA / offline
+
+Requisito fondamentale: le carte gia' sincronizzate devono restare **completamente
+utilizzabili senza connessione** (es. al supermercato senza campo).
+
 - **[MVP]** Manifest + service worker (installabile su iPhone da Safari, "Aggiungi a Home").
-- **[MVP]** Cache locale delle carte (localStorage) per consultazione/barcode fullscreen offline.
-- Sync in background alla riconnessione per modifiche fatte offline.
+- **[MVP]** Precache dell'intera app shell (JS/CSS/HTML): l'app si apre e naviga tra le
+  pagine anche a connessione completamente assente, non solo con dati gia' caricati.
+- **[MVP]** Cache locale delle carte (localStorage) aggiornata a ogni apertura online
+  dell'app: lista, ricerca istantanea (Fuse.js) e barcode fullscreen (bwip-js, generato
+  client-side) funzionano tutti da questa cache, senza bisogno del backend.
+- **[MVP]** Cache runtime (CacheFirst) delle immagini dei loghi negozio, cosi' restano
+  visibili anche offline dopo il primo caricamento.
+- **[MVP]** Fallback visivo (iniziale del nome) se un logo non e' disponibile offline,
+  invece di un'icona rotta.
+- **[MVP]** Banner "sei offline" quando manca connessione, per rassicurare l'utente che
+  sta correttamente vedendo dati salvati e non un errore.
+- **[MVP]** Sessione (JWT) di lunga durata (14 giorni di default): la verifica di
+  autenticazione lato client controlla solo la presenza del token, non lo valida contro
+  il server, quindi l'accesso alle carte in cache non richiede mai rete.
+- Sync in background alla riconnessione per modifiche fatte offline (oggi solo in lettura:
+  aggiungere/modificare una carta richiede comunque connessione, la consultazione no).
+- v2: refresh-token flow per non dover comunque rifare login dopo settimane di inattivita'.
+
+**Limite noto**: la primissima sincronizzazione richiede una connessione (per scaricare
+le carte e per l'installazione iniziale della PWA). Da li' in poi, tutto cio' che serve
+per usare le carte gia' presenti funziona offline.
 
 ## 9. Sicurezza
 - Rate limiting su login e su endpoint di condivisione.

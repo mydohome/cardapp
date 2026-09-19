@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api } from "../lib/api";
 import { getRecentCards, refreshCards, searchCards } from "../lib/cardCache";
+import { useOnlineStatus } from "../lib/useOnlineStatus";
 import type { Card } from "../types";
 
 export default function CardListPage() {
@@ -9,6 +10,7 @@ export default function CardListPage() {
   const [results, setResults] = useState<Card[]>([]);
   const [recents, setRecents] = useState<Card[]>([]);
   const navigate = useNavigate();
+  const online = useOnlineStatus();
 
   useEffect(() => {
     // Carica subito la cache locale (istantaneo, funziona anche offline)
@@ -33,6 +35,11 @@ export default function CardListPage() {
 
   return (
     <div className="page">
+      {!online && (
+        <div className="offline-banner">
+          Sei offline: stai vedendo le carte salvate sul dispositivo.
+        </div>
+      )}
       <header className="list-header">
         <input
           autoFocus
@@ -80,10 +87,20 @@ export default function CardListPage() {
 }
 
 function CardTile({ card }: { card: Card }) {
+  // Se il logo non e' in cache e siamo offline (o l'URL non e' piu' raggiungibile),
+  // si passa al placeholder invece di mostrare un'icona rotta.
+  const [logoFailed, setLogoFailed] = useState(false);
+  const showLogo = card.store?.logo_url && !logoFailed;
+
   return (
     <Link to={`/card/${card.id}`} className="card-tile">
-      {card.store?.logo_url ? (
-        <img src={card.store.logo_url} alt="" className="card-logo" />
+      {showLogo ? (
+        <img
+          src={card.store!.logo_url!}
+          alt=""
+          className="card-logo"
+          onError={() => setLogoFailed(true)}
+        />
       ) : (
         <div className="card-logo placeholder">{card.label[0]?.toUpperCase()}</div>
       )}

@@ -3,12 +3,14 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../lib/api";
 import { refreshCards } from "../lib/cardCache";
+import { useOnlineStatus } from "../lib/useOnlineStatus";
 import type { Store } from "../types";
 
 export default function ScanCardPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const readerRef = useRef<BrowserMultiFormatReader | null>(null);
   const navigate = useNavigate();
+  const online = useOnlineStatus();
 
   const [barcodeValue, setBarcodeValue] = useState("");
   const [label, setLabel] = useState("");
@@ -73,6 +75,12 @@ export default function ScanCardPage() {
   return (
     <div className="page">
       <h1>Aggiungi carta</h1>
+
+      {!online && (
+        <div className="offline-banner">
+          Sei offline: puoi scansionare il codice, ma per salvare la carta serve una connessione.
+        </div>
+      )}
 
       {!barcodeValue && (
         <>

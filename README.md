@@ -37,6 +37,23 @@ tranne che su `localhost`. Per testare da un iPhone in rete locale:
   dal `Caddyfile` e imposta il tuo dominio al posto di `:80`), oppure
 - usa un tunnel HTTPS temporaneo (es. Tailscale Funnel, ngrok) verso la porta 80.
 
+## Uso offline (es. al supermercato senza campo)
+
+Le carte già sincronizzate sono utilizzabili anche a connessione assente: ricerca,
+apertura e barcode fullscreen funzionano da una cache locale sul dispositivo, senza
+contattare il backend. Aggiungere una carta nuova, invece, richiede connessione.
+
+Come verificarlo:
+1. Apri l'app **almeno una volta online** (da installata, "Aggiungi a Home" su iOS) —
+   questo scarica e salva le carte in locale.
+2. Metti il dispositivo in modalità aereo.
+3. Riapri l'app: deve caricarsi normalmente e mostrare un banner "Sei offline";
+   ricerca e apertura fullscreen delle carte devono continuare a funzionare.
+
+Se dopo il primo avvio online una carta non compare offline, riapri l'app online
+un'altra volta: la sincronizzazione avviene ad ogni apertura riuscita, non in automatico
+in background.
+
 ## Backup e ripristino
 
 - Backup automatico ogni notte (cron nel container `backup`), salvato in `./backups/<timestamp>/`.
