@@ -22,14 +22,24 @@ le altre sono previste ma non ancora sviluppate.
 ## 3. Riconoscimento negozio/logo
 - **[MVP]** OCR sulla foto (`pytesseract`, anche qui la foto non viene salvata) + fuzzy
   match testuale contro il catalogo `stores`.
-- Catalogo negozi pre-popolato (script `backend/app/seed_stores.py`, da estendere).
+- **[MVP]** Catalogo negozi pre-popolato (script `backend/app/seed_stores.py`) con logo
+  incluso: i loghi vengono da [Clearbit Logo API](https://clearbit.com/logo) a partire
+  dal dominio ufficiale del negozio (non ospitiamo noi le immagini, solo un link).
+  Rieseguire lo script dopo un aggiornamento aggiunge il logo ai negozi che ancora
+  non ce l'hanno, senza toccare eventuali logo_url personalizzati a mano.
 - v2: embedding visivo del logo (CLIP) per match anche senza testo leggibile.
-- Ricerca/assegnazione manuale del negozio quando il match automatico fallisce.
+- **[MVP]** Assegnazione/cambio manuale del negozio dalla modifica carta (ricerca per
+  nome), utile quando il match automatico fallisce o per correggerlo.
 
 ## 4. Ricerca e visualizzazione
 - **[MVP]** Ricerca istantanea client-side (Fuse.js) su tutte le carte caricate in cache locale.
 - **[MVP]** Vista fullscreen del barcode con Screen Wake Lock (evita spegnimento schermo alla cassa).
 - **[MVP]** Sezione "Recenti" per accesso rapido alle carte usate più spesso.
+- **[MVP]** Modifica (nome, codice, formato, negozio, note) ed eliminazione di una carta
+  posseduta, dalla lista carte (pulsante ✎). Un utente con permesso "può modificare" su
+  una carta condivisa può già farlo via API, ma non ha ancora un pulsante nell'interfaccia
+  per questo (solo il proprietario vede ✎ nella lista) — eliminare resta comunque
+  possibile solo al proprietario.
 - Ordinamento per categoria, tag personalizzati, preferiti.
 
 ## 5. Multiutente e condivisione

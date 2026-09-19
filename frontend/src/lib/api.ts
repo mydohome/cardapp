@@ -1,4 +1,4 @@
-import type { Card, Invite, Share, SharePermission, Store } from "../types";
+import type { BarcodeFormat, Card, Invite, Share, SharePermission, Store } from "../types";
 
 const API_BASE = "/api";
 
@@ -63,8 +63,21 @@ export const api = {
     return request<Card[]>("/cards");
   },
 
-  createCard(payload: { label: string; barcode_value: string; barcode_format: string; store_id?: string }) {
+  createCard(payload: { label: string; barcode_value: string; barcode_format: BarcodeFormat; store_id?: string }) {
     return request<Card>("/cards", { method: "POST", body: JSON.stringify(payload) });
+  },
+
+  updateCard(
+    id: string,
+    payload: Partial<{
+      label: string;
+      barcode_value: string;
+      barcode_format: BarcodeFormat;
+      store_id: string | null;
+      notes: string | null;
+    }>
+  ) {
+    return request<Card>(`/cards/${id}`, { method: "PATCH", body: JSON.stringify(payload) });
   },
 
   deleteCard(id: string) {

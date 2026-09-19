@@ -30,13 +30,19 @@ body {
 }
 
 input,
-select {
+select,
+textarea {
   padding: 12px;
   border-radius: 8px;
   border: 1px solid #374151;
   background: #1f2937;
   color: white;
   font-size: 16px;
+  font-family: inherit;
+}
+
+textarea {
+  resize: vertical;
 }
 
 button {
@@ -133,10 +139,15 @@ button:disabled {
   position: relative;
 }
 
-.share-btn {
+.tile-actions {
   position: absolute;
   top: 4px;
   right: 4px;
+  display: flex;
+  gap: 4px;
+}
+
+.tile-action-btn {
   width: 26px;
   height: 26px;
   padding: 0;
@@ -145,7 +156,7 @@ button:disabled {
   justify-content: center;
   border-radius: 50%;
   background: #374151;
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1;
 }
 
@@ -288,4 +299,43 @@ button:disabled {
   background: #374151;
   border-radius: 8px;
   cursor: pointer;
+}
+
+.store-search {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.store-search input {
+  width: 100%;
+}
+
+.store-suggestions {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.store-suggestions button {
+  width: 100%;
+  text-align: left;
+  padding: 8px 10px;
+  font-size: 14px;
+}
+
+.danger-zone {
+  border-top: 1px solid #374151;
+  padding-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+button.danger {
+  background: #7f1d1d;
 }
