@@ -24,8 +24,10 @@ services:
       - backend
     security_opt:
       - no-new-privileges:true
-    cap_drop:
-      - ALL
+    # Niente cap_drop qui: l'entrypoint ufficiale di nginx deve fare chown
+    # delle cartelle di cache (CAP_CHOWN) e il master, avviato come root,
+    # deve poter abbassare i privilegi dei worker (CAP_SETUID/CAP_SETGID).
+    # Stesso motivo per cui non e' applicato a db/redis piu' sotto.
     mem_limit: 256m
     cpus: 0.5
     logging:
