@@ -53,6 +53,25 @@ sviluppo o quella di produzione. In alternativa, direttamente:
 docker compose exec backend python -m app.manage_users
 ```
 
+## Aggiornamento
+
+```bash
+./update.sh
+```
+
+Aggiorna il codice e riavvia lo stack in modo sicuro: si rifiuta di procedere se ci
+sono modifiche locali non committate, scarica solo in fast-forward (mai un merge
+automatico), fa un backup di sicurezza prima di toccare qualunque cosa (se il
+servizio `backup` è attivo), poi ricostruisce e riavvia solo l'installazione che
+trova configurata. Non fa nulla se sei già aggiornato.
+
+In alternativa, a mano:
+
+```bash
+git pull
+docker compose up -d --build   # dalla cartella giusta: root oppure deploy/
+```
+
 ## Testare lo scan da iPhone reale
 
 iOS Safari richiede un **contesto sicuro (HTTPS)** per l'accesso alla fotocamera,
@@ -109,6 +128,7 @@ deploy/           Compose di produzione dietro Nginx Proxy Manager
 docs/             Specifica funzionale dettagliata
 Caddyfile         Reverse proxy + terminazione HTTPS (solo per lo stack di sviluppo)
 install.sh        Installazione guidata (sceglie dev/prod, genera .env con segreti)
+update.sh         Aggiornamento sicuro da git (fast-forward + backup + rebuild)
 manage-users.sh   Apre la CLI di gestione utenti nel container backend
 ```
 
