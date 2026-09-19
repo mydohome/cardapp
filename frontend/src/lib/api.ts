@@ -1,0 +1,90 @@
+import type { Card, Store } from "../types";
+
+const API_BASE = "/api";
+
+export interface PhotoRecognitionResult {
+  detected_text?: string | null;
+  matched_store?: Store | null;
+  decoded_barcode_value?: string | null;
+  decoded_barcode_format?: string | null;
+}
+
+function authHeaders(): Record<string, string> {
+  const token = localStorage.getItem("access_token");
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
+async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
+  const res = await fetch(`${API_BASE}${path}`, {
+    ...options,
+    headers: {
+      ...(options.body instanceof FormData ? {} : { "Content-Type": "application/json" }),
+      ...authHeaders(),
+      ...options.headers,
+    },
+  });
+
+  if (!res.ok) {
+    const detail = await res.json().catch(() => ({}));
+    throw new Error(detail.detail || `Errore ${res.status}`);
+  }
+  if (res.status === 204) return undefined as T;
+  return res.json();
+}
+
+export const api = {
+  async login(email: string, password: string) {
+    const form = new URLSearchParams();
+    form.set("username", email);
+    form.set("password", password);
+    const res = await fetch(`${API_BASE}/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: form,
+    });
+    if (!res.ok) throw new Error("Email o password errati");
+    const data = await res.json();
+    localStorage.setItem("access_token", data.access_token);
+    return data;
+  },
+
+  register(email: string, password: string, display_name?: string) {
+    return request("/auth/register", {
+      method: "POST",
+      body: JSON.stringify({ email, password, display_name }),
+    });
+  },
+
+  logout() {
+    localStorage.removeItem("access_token");
+  },
+
+  listCards() {
+    return request<Card[]>("/cards");
+  },
+
+  createCard(payload: { label: string; barcode_value: string; barcode_format: string; store_id?: string }) {
+    return request<Card>("/cards", { method: "POST", body: JSON.stringify(payload) });
+  },
+
+  deleteCard(id: string) {
+    return request<void>(`/cards/${id}`, { method: "DELETE" });
+  },
+
+  searchStores(q: string) {
+    return request<Store[]>(`/stores?q=${encodeURIComponent(q)}`);
+  },
+
+  recognizePhoto(file: File) {
+    const form = new FormData();
+    form.append("file", file);
+    return request<PhotoRecognitionResult>("/cards/recognize-photo", { method: "POST", body: form });
+  },
+
+  shareCard(cardId: string, email: string, permission: "view" | "edit" = "view") {
+    return request(`/cards/${cardId}/shares`, {
+      method: "POST",
+      body: JSON.stringify({ email, permission }),
+    });
+  },
+};

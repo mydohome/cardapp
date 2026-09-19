@@ -1,0 +1,16 @@
+{
+	# Per uso locale/LAN senza dominio. In produzione con un dominio pubblico
+	# Caddy ottiene automaticamente un certificato HTTPS: sostituire ":80" con
+	# il proprio dominio (es. "cardapp.miodominio.it").
+	auto_https off
+}
+
+:80 {
+	handle /api/* {
+		reverse_proxy backend:8000
+	}
+
+	handle {
+		reverse_proxy frontend:80
+	}
+}

@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/
+
+# Node
+node_modules/
+dist/
+.vite/
+*.tsbuildinfo
+
+# Env
+.env
+*.local
+
+# Data
+backups/
+postgres_data/
+minio_data/
+
+# OS/IDE
+.DS_Store
+.vscode/
+.idea/

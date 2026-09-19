@@ -1,0 +1,102 @@
+from datetime import datetime
+from typing import Optional
+
+from pydantic import BaseModel, EmailStr
+
+from app.models import BarcodeFormat, SharePermission
+
+
+# --- Auth ---
+
+class UserCreate(BaseModel):
+    email: EmailStr
+    password: str
+    display_name: Optional[str] = None
+
+
+class UserOut(BaseModel):
+    id: str
+    email: EmailStr
+    display_name: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+
+
+# --- Store ---
+
+class StoreOut(BaseModel):
+    id: str
+    name: str
+    logo_url: Optional[str] = None
+    category: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
+# --- Card ---
+
+class CardCreate(BaseModel):
+    label: str
+    barcode_value: str
+    barcode_format: BarcodeFormat = BarcodeFormat.EAN13
+    store_id: Optional[str] = None
+    notes: Optional[str] = None
+
+
+class CardUpdate(BaseModel):
+    label: Optional[str] = None
+    barcode_value: Optional[str] = None
+    barcode_format: Optional[BarcodeFormat] = None
+    store_id: Optional[str] = None
+    notes: Optional[str] = None
+
+
+class CardOut(BaseModel):
+    id: str
+    label: str
+    barcode_value: str
+    barcode_format: BarcodeFormat
+    store: Optional[StoreOut] = None
+    photo_key: Optional[str] = None
+    notes: Optional[str] = None
+    updated_at: datetime
+    shared_by: Optional[str] = None  # email del proprietario, valorizzato solo per carte condivise
+
+    class Config:
+        from_attributes = True
+
+
+# --- Sharing ---
+
+class ShareCreate(BaseModel):
+    email: EmailStr
+    permission: SharePermission = SharePermission.VIEW
+
+
+class ShareInviteCreate(BaseModel):
+    permission: SharePermission = SharePermission.VIEW
+    expires_in_hours: int = 72
+
+
+class ShareInviteOut(BaseModel):
+    token: str
+    expires_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+
+# --- Photo recognition ---
+
+class PhotoRecognitionResult(BaseModel):
+    detected_text: Optional[str] = None
+    matched_store: Optional[StoreOut] = None
+    decoded_barcode_value: Optional[str] = None
+    decoded_barcode_format: Optional[BarcodeFormat] = None
