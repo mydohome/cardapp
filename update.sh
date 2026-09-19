@@ -80,10 +80,20 @@ fi
 echo "Nuove modifiche disponibili su origin/$CURRENT_BRANCH ($LOCAL_SHA -> $REMOTE_SHA)."
 
 # --- 4. backup di sicurezza prima di aggiornare, se lo stack e' attivo ---
+# Non deve MAI bloccare l'aggiornamento: un backup rotto non deve impedire
+# di scaricare proprio il fix che lo ripara (successo gia' capitato).
 echo
 if (cd "$COMPOSE_DIR" && docker compose ps --status running --services 2>/dev/null | grep -qx backup); then
   echo "Eseguo un backup di sicurezza prima di aggiornare..."
-  (cd "$COMPOSE_DIR" && docker compose exec -T backup /usr/local/bin/backup.sh)
+  if ! (cd "$COMPOSE_DIR" && docker compose exec -T backup /usr/local/bin/backup.sh); then
+    echo
+    echo "[AVVISO] il backup di sicurezza e' fallito."
+    read -rp "Continuare comunque con l'aggiornamento? (si/No): " CONTINUE_ANYWAY
+    if [ "${CONTINUE_ANYWAY,,}" != "si" ]; then
+      echo "Aggiornamento annullato."
+      exit 1
+    fi
+  fi
 else
   echo "[AVVISO] il servizio 'backup' non risulta in esecuzione: procedo senza backup di sicurezza."
 fi
