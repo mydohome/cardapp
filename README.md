@@ -5,8 +5,9 @@ riconoscimento automatico negozio/logo da foto, condivisione carte tra utenti,
 gestione via web, backup e ripristino locali.
 
 Stack: FastAPI (backend) + React/Vite PWA (frontend) + PostgreSQL + Redis,
-foto delle carte salvate su disco locale, il tutto orchestrato con Docker
-Compose dietro un reverse proxy Caddy.
+il tutto orchestrato con Docker Compose dietro un reverse proxy Caddy. Il
+barcode viene rigenerato dal numero salvato (non da una foto): niente
+object storage, niente foto da conservare.
 
 Dettaglio delle funzionalità (implementate e pianificate): [docs/FUNCTIONALITY.md](docs/FUNCTIONALITY.md).
 

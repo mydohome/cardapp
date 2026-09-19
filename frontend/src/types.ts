@@ -21,7 +21,6 @@ export interface Card {
   barcode_value: string;
   barcode_format: BarcodeFormat;
   store?: Store | null;
-  photo_key?: string | null;
   notes?: string | null;
   updated_at: string;
   shared_by?: string | null;

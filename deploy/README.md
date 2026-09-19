@@ -51,7 +51,7 @@ Dalla radice del repo:
 
 Scegli l'opzione "2) Produzione dietro Nginx Proxy Manager": genera `deploy/.env` con
 password/segreti sicuri creati automaticamente, crea `db/data`, `redis/data`,
-`uploads/data`, `backups`, e offre di creare la rete `proxy-net` se manca.
+`backups`, e offre di creare la rete `proxy-net` se manca.
 
 In alternativa, a mano:
 
@@ -59,7 +59,7 @@ In alternativa, a mano:
 cp .env.example .env
 # valorizza .env con segreti reali (password DB, JWT_SECRET, ecc.)
 
-mkdir -p db/data redis/data uploads/data backups
+mkdir -p db/data redis/data backups
 ```
 
 ## 4. Avvio
@@ -99,17 +99,10 @@ same-origin e non serve esporre il backend separatamente su NPM.
   bisogno di operazioni privilegiate alla prima inizializzazione del volume
   dati (es. `chown`).
 
-## Storage foto carte
-
-Le foto caricate durante lo scan sono salvate su disco dal container `app`
-in `./uploads/data` (bind mount, non un object storage): per un uso
-self-hosted personale/familiare non serve la semantica S3, ed è un servizio
-in meno da mantenere.
-
 ## Backup
 
-Il container `backup` esegue ogni notte (cron) un `pg_dump` + archivio delle
-foto carte in `./backups/<timestamp>/`, con rotazione automatica (`BACKUP_KEEP_LAST`
+Il container `backup` esegue ogni notte (cron) un `pg_dump` del database in
+`./backups/<timestamp>/`, con rotazione automatica (`BACKUP_KEEP_LAST`
 in `.env`). Ripristino manuale:
 
 ```bash

@@ -30,8 +30,4 @@ PGPASSWORD="${POSTGRES_PASSWORD}" pg_restore \
   -h "${DB_HOST}" -U "${POSTGRES_USER}" -d "${POSTGRES_DB}" \
   --clean --if-exists "${SRC}/postgres.dump"
 
-echo "[restore] Ripristino foto carte da ${SRC}/uploads.tar.gz..."
-rm -rf /uploads_data/*
-tar -xzf "${SRC}/uploads.tar.gz" -C /uploads_data
-
 echo "[restore] Completato. Riavvia il servizio backend per applicare i dati."

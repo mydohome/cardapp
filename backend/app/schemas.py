@@ -71,7 +71,6 @@ class CardOut(BaseModel):
     barcode_value: str
     barcode_format: BarcodeFormat
     store: Optional[StoreOut] = None
-    photo_key: Optional[str] = None
     notes: Optional[str] = None
     updated_at: datetime
     shared_by: Optional[str] = None  # nome del proprietario, valorizzato solo per carte condivise

@@ -13,11 +13,15 @@ le altre sono previste ma non ancora sviluppate.
 
 ## 2. Acquisizione carta
 - **[MVP]** Scan barcode live da fotocamera (`@zxing/browser`).
-- **[MVP]** Fallback: upload foto → decodifica barcode server-side (`pyzbar`).
+- **[MVP]** Fallback: upload foto → decodifica barcode server-side (`pyzbar`). La foto è
+  usata solo al volo per leggere il codice, non viene salvata: una volta letto il
+  numero, il barcode viene sempre rigenerato identico (bwip-js, con il numero
+  stampato sotto), quindi non serve conservare l'immagine originale.
 - **[MVP]** Inserimento manuale (codice + simbologia).
 
 ## 3. Riconoscimento negozio/logo
-- **[MVP]** OCR sulla foto (`pytesseract`) + fuzzy match testuale contro il catalogo `stores`.
+- **[MVP]** OCR sulla foto (`pytesseract`, anche qui la foto non viene salvata) + fuzzy
+  match testuale contro il catalogo `stores`.
 - Catalogo negozi pre-popolato (script `backend/app/seed_stores.py`, da estendere).
 - v2: embedding visivo del logo (CLIP) per match anche senza testo leggibile.
 - Ricerca/assegnazione manuale del negozio quando il match automatico fallisce.
@@ -46,7 +50,7 @@ le altre sono previste ma non ancora sviluppate.
 - Pannello amministrativo per il catalogo negozi/loghi (merge duplicati, upload logo manuale).
 
 ## 7. Backup e ripristino (locale)
-- **[MVP]** Container `backup` schedulato (cron) → `pg_dump` + tar delle foto carte su `./backups`.
+- **[MVP]** Container `backup` schedulato (cron) → `pg_dump` del database su `./backups`.
 - **[MVP]** Rotazione automatica (mantiene ultimi N backup, configurabile via `BACKUP_KEEP_LAST`).
 - **[MVP]** Script `restore.sh` per ripristino manuale da un backup specifico.
 - Export utente singolo (zip con metadati + immagini), scaricabile dall'app.

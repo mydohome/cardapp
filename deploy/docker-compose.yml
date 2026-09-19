@@ -42,8 +42,6 @@ services:
     restart: unless-stopped
     env_file:
       - .env
-    volumes:
-      - ./uploads/data:/data/uploads
     networks:
       - backend
     security_opt:
@@ -108,8 +106,8 @@ services:
         max-size: "10m"
         max-file: "3"
 
-  # Backup locale schedulato (pg_dump + tar delle foto caricate). Non serve
-  # pubblicarlo su una registry: viene buildato direttamente dal sorgente.
+  # Backup locale schedulato (pg_dump del database). Non serve pubblicarlo
+  # su una registry: viene buildato direttamente dal sorgente.
   backup:
     build: ../backup
     container_name: cardapp-backup
@@ -130,7 +128,6 @@ services:
         max-size: "10m"
         max-file: "3"
     volumes:
-      - ./uploads/data:/uploads_data
       - ./backups:/backups
     depends_on:
       - db

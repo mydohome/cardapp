@@ -22,8 +22,6 @@ services:
     build: ./backend
     restart: unless-stopped
     env_file: .env
-    volumes:
-      - uploads_data:/data/uploads
     depends_on:
       postgres:
         condition: service_healthy
@@ -56,10 +54,8 @@ services:
     depends_on:
       - postgres
     volumes:
-      - uploads_data:/uploads_data
       - ./backups:/backups
 
 volumes:
   postgres_data:
-  uploads_data:
   caddy_data:

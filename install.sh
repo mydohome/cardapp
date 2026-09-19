@@ -90,7 +90,7 @@ echo
 echo "Preparo le directory necessarie..."
 mkdir -p "$TARGET_DIR/backups"
 if [ "$MODE" = "2" ]; then
-  mkdir -p "$TARGET_DIR/db/data" "$TARGET_DIR/redis/data" "$TARGET_DIR/uploads/data"
+  mkdir -p "$TARGET_DIR/db/data" "$TARGET_DIR/redis/data"
 
   if command -v docker >/dev/null 2>&1; then
     if ! docker network inspect proxy-net >/dev/null 2>&1; then
