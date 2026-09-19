@@ -15,7 +15,14 @@ server {
     # instradare /api/* direttamente al backend, bypassando nginx.
     location /api/ {
         set $backend "${BACKEND_UPSTREAM}";
-        proxy_pass http://$backend/api/;
+        # NIENTE path dopo $backend: con una variabile in proxy_pass, nginx
+        # non fa la normale sostituzione del prefisso di location (che
+        # servirebbe a mappare /api/xyz -> /api/xyz sul backend). Se scrivi
+        # un path qui (es. "http://$backend/api/"), quel path SOSTITUISCE
+        # l'URI originale invece di combinarcisi: ogni richiesta finirebbe
+        # inoltrata come il solo "/api/" letterale, sempre 404. Senza path,
+        # nginx inoltra l'URI originale invariato (es. /api/auth/login).
+        proxy_pass http://$backend;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
