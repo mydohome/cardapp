@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
-from sqlalchemy import or_
+from sqlalchemy import func, or_
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -34,10 +34,12 @@ def register(payload: UserCreate, db: Session = Depends(get_db)):
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     # form_data.username e' il campo standard OAuth2: qui accetta sia lo
     # username sia l'email, per comodita' di chi la email l'ha impostata.
-    identifier = form_data.username
+    # Confronto case-insensitive: chi crea l'utente da CLI e chi digita al
+    # login potrebbero usare maiuscole diverse, non deve essere un problema.
+    identifier = form_data.username.strip().lower()
     user = (
         db.query(User)
-        .filter(or_(User.username == identifier, User.email == identifier))
+        .filter(or_(func.lower(User.username) == identifier, func.lower(User.email) == identifier))
         .first()
     )
     if not user or not verify_password(form_data.password, user.hashed_password):

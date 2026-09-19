@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, field_validator
 
 from app.models import BarcodeFormat, SharePermission
 
@@ -11,6 +11,12 @@ from app.models import BarcodeFormat, SharePermission
 USERNAME_PATTERN = r"^[a-zA-Z0-9_.-]{3,32}$"
 
 
+def normalize_username(value: str) -> str:
+    """Minuscolo e senza spazi ai lati: cosi' "Mario"/"mario"/"MARIO" sono
+    sempre lo stesso utente, sia in creazione che in login/condivisione."""
+    return value.strip().lower()
+
+
 # --- Auth ---
 
 class UserCreate(BaseModel):
@@ -18,6 +24,11 @@ class UserCreate(BaseModel):
     password: str
     email: Optional[EmailStr] = None
     display_name: Optional[str] = None
+
+    @field_validator("username", mode="before")
+    @classmethod
+    def _normalize_username(cls, value: str) -> str:
+        return normalize_username(value)
 
 
 class UserOut(BaseModel):
@@ -84,6 +95,11 @@ class CardOut(BaseModel):
 class ShareCreate(BaseModel):
     username: str
     permission: SharePermission = SharePermission.VIEW
+
+    @field_validator("username", mode="before")
+    @classmethod
+    def _normalize_username(cls, value: str) -> str:
+        return normalize_username(value)
 
 
 class ShareOut(BaseModel):

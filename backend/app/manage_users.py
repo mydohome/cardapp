@@ -10,7 +10,7 @@ import sys
 
 from app.database import Base, SessionLocal, engine
 from app.models import User
-from app.schemas import USERNAME_PATTERN
+from app.schemas import USERNAME_PATTERN, normalize_username
 from app.security import hash_password
 
 USERNAME_RE = re.compile(USERNAME_PATTERN)
@@ -42,7 +42,7 @@ def prompt_password(label: str = "Password") -> str:
 
 
 def prompt_username(db, label: str = "Username") -> str | None:
-    username = input(f"{label} (3-32 caratteri, lettere/cifre/punto/underscore/trattino): ").strip()
+    username = normalize_username(input(f"{label} (3-32 caratteri, lettere/cifre/punto/underscore/trattino): "))
     if not USERNAME_RE.match(username):
         print("Username non valido.")
         return None
@@ -77,7 +77,7 @@ def create_user(db) -> None:
 
 
 def _find_user(db) -> User | None:
-    username = input("Username: ").strip()
+    username = normalize_username(input("Username: "))
     user = db.query(User).filter(User.username == username).first()
     if not user:
         print("Utente non trovato.")
