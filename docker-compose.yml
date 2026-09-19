@@ -19,7 +19,7 @@ services:
     restart: unless-stopped
 
   minio:
-    image: minio/minio:latest
+    build: ./minio
     restart: unless-stopped
     command: server /data
     environment:
@@ -28,7 +28,7 @@ services:
     volumes:
       - minio_data:/data
     healthcheck:
-      test: ["CMD", "mc", "ready", "local"]
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
       interval: 5s
       timeout: 5s
       retries: 10

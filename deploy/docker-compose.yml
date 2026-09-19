@@ -109,7 +109,7 @@ services:
         max-file: "3"
 
   minio:
-    image: minio/minio:latest
+    build: ../minio
     container_name: cardapp-minio
     restart: unless-stopped
     command: server /data
@@ -130,7 +130,7 @@ services:
         max-size: "10m"
         max-file: "3"
     healthcheck:
-      test: ["CMD", "mc", "ready", "local"]
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
       interval: 5s
       timeout: 5s
       retries: 10
