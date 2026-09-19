@@ -12,6 +12,14 @@
 #   fa da unico punto di ingresso e instrada internamente /api/* al backend
 #   (vedi frontend/nginx.conf.template), cosi' l'app resta same-origin.
 
+# Nome del progetto esplicito: senza "name:", Docker Compose lo deriva dal
+# nome della CARTELLA ("deploy"), quindi la rete si chiamerebbe
+# "deploy_backend" - identica a quella di qualunque altro progetto la cui
+# cartella di deploy si chiami anch'essa "deploy" (capitato davvero: la
+# rete finiva condivisa con un'altra app sullo stesso host). Con "name:"
+# la rete diventa sempre "cardapp_backend", univoca per questo progetto.
+name: cardapp
+
 services:
   web:
     build: ../frontend

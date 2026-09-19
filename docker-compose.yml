@@ -1,3 +1,8 @@
+# Nome esplicito: senza "name:", Docker Compose lo deriva dal nome della
+# cartella che contiene questo file, rischiando di collidere con un altro
+# progetto che si chiami allo stesso modo su questo host.
+name: cardapp-dev
+
 services:
   postgres:
     image: postgres:16-alpine
