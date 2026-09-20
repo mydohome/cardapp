@@ -44,11 +44,14 @@ le altre sono previste ma non ancora sviluppate.
   al notch/Dynamic Island di iPhone (prima era troppo in alto). Scan e la vista
   fullscreen del barcode restano a schermo intero, senza tab bar.
 - **[MVP]** Ricerca istantanea client-side (Fuse.js) su tutte le carte caricate in cache locale.
-- **[MVP]** Vista fullscreen del barcode con Screen Wake Lock (evita spegnimento schermo alla cassa).
-  Per EAN-13/EAN-8 il rendering usa `guardwhitespace` (bwip-js): senza, la cifra iniziale
-  stampata fuori dalle barre occupa spazio solo a sinistra, e il codice appare visibilmente
-  spostato a destra rispetto al centro dello schermo (bug verificato pixel per pixel sul
-  canvas grezzo, non era un problema di notch/safe-area come ipotizzato in un primo momento).
+- **[MVP]** Vista fullscreen del barcode con Screen Wake Lock (evita spegnimento schermo alla cassa),
+  nome del negozio/carta in grande e in grassetto. Per EAN-13/EAN-8 il rendering ricentra il
+  codice misurando i pixel disegnati (`lib/centerBarcodeCanvas.ts`) e aggiungendo margine
+  bianco dal lato più corto: senza, la cifra iniziale stampata fuori dalle barre occupa
+  spazio solo a sinistra e il codice appare visibilmente spostato a destra (bug verificato
+  pixel per pixel sul canvas grezzo, non era un problema di notch/safe-area come ipotizzato
+  in un primo momento). Non si usa l'opzione `guardwhitespace` di bwip-js perché aggiunge gli
+  indicatori "<"/">" ben visibili accanto al codice, fuori posto su una carta fedeltà.
 - **[MVP]** Sezione "Recenti" per accesso rapido alle carte usate più spesso.
 - **[MVP]** Preferiti: tab dedicato con le carte segnate con la stella (☆/★ su ogni carta).
   È una preferenza personale per utente (tabella separata `card_favorites`), non un campo

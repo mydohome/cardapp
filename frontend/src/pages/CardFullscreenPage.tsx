@@ -1,6 +1,7 @@
 import bwipjs from "bwip-js/browser";
 import { useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { centerBarcodeCanvas } from "../lib/centerBarcodeCanvas";
 import { getCard, markRecent } from "../lib/cardCache";
 
 const BWIP_TYPE_BY_FORMAT: Record<string, string> = {
@@ -29,21 +30,27 @@ export default function CardFullscreenPage() {
   useEffect(() => {
     if (!card || !canvasRef.current) return;
     try {
-      bwipjs.toCanvas(canvasRef.current, {
+      // Canvas temporaneo: bwip-js non sempre riserva lo stesso quiet space
+      // sui due lati (per EAN-13/EAN-8 la cifra iniziale, stampata fuori
+      // dalle barre solo a sinistra, spostava visibilmente il codice verso
+      // destra - root cause verificata pixel per pixel sul canvas grezzo).
+      // "guardwhitespace" risolverebbe lo squilibrio ma aggiunge gli
+      // indicatori "<"/">" ben visibili accanto al codice, fuori posto su
+      // una carta fedelta'; centerBarcodeCanvas ottiene lo stesso
+      // riequilibrio misurando i pixel disegnati, senza alcun carattere in piu'.
+      const offscreen = document.createElement("canvas");
+      bwipjs.toCanvas(offscreen, {
         bcid: BWIP_TYPE_BY_FORMAT[card.barcode_format] || "code128",
         text: card.barcode_value,
         scale: 4,
         height: card.barcode_format === "QRCODE" ? 40 : 15,
         includetext: true,
-        // EAN-13/EAN-8 stampano la cifra iniziale FUORI dalle barre, nel
-        // quiet space sinistro: senza questa opzione bwip-js non riserva lo
-        // stesso spazio a destra, e il codice risulta visibilmente spostato
-        // verso destra nel canvas (root cause del problema segnalato, non
-        // il notch/safe-area come ipotizzato in precedenza - verificato
-        // pixel per pixel sul canvas grezzo). Per gli altri formati
-        // l'opzione viene ignorata senza effetti.
-        guardwhitespace: true,
       });
+      const balanced = centerBarcodeCanvas(offscreen);
+      const target = canvasRef.current;
+      target.width = balanced.width;
+      target.height = balanced.height;
+      target.getContext("2d")!.drawImage(balanced, 0, 0);
     } catch (err) {
       console.error("Errore rendering barcode", err);
     }

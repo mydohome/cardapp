@@ -87,7 +87,7 @@ button:disabled {
 
 .card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(136px, 1fr));
   gap: 12px;
   margin-bottom: 24px;
 }
@@ -96,8 +96,8 @@ button:disabled {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-  padding: 12px;
+  gap: 8px;
+  padding: 14px 12px;
   background: #1f2937;
   border-radius: 12px;
   text-decoration: none;
@@ -106,8 +106,8 @@ button:disabled {
 }
 
 .card-logo {
-  width: 48px;
-  height: 48px;
+  width: 58px;
+  height: 58px;
   border-radius: 50%;
   object-fit: cover;
   background: #374151;
@@ -118,12 +118,14 @@ button:disabled {
   align-items: center;
   justify-content: center;
   font-weight: bold;
-  font-size: 20px;
+  font-size: 24px;
 }
 
 .card-label {
-  font-size: 13px;
+  font-size: 15px;
+  font-weight: 700;
   text-align: center;
+  line-height: 1.25;
 }
 
 .badge {
@@ -277,8 +279,10 @@ button:disabled {
 }
 
 .card-title {
-  font-size: 20px;
-  font-weight: 600;
+  font-size: 28px;
+  font-weight: 800;
+  text-align: center;
+  letter-spacing: 0.2px;
 }
 
 .hint {
