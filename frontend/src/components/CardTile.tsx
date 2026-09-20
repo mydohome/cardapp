@@ -31,7 +31,7 @@ export default function CardTile({
           </span>
         )}
       </Link>
-      <div className="tile-actions">
+      <div className={"tile-actions" + (isOwn ? "" : " tile-actions-single")}>
         <button
           className="tile-action-btn"
           aria-label={card.is_favorite ? "Rimuovi dai preferiti" : "Aggiungi ai preferiti"}

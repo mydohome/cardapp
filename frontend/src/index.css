@@ -116,10 +116,12 @@ button:disabled {
 
 .card-label {
   display: block;
-  font-size: 18px;
+  font-size: 21px;
   font-weight: 800;
-  line-height: 1.22;
+  line-height: 1.2;
+  letter-spacing: 0.1px;
   color: #ffffff;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
 }
 
 .card-tile-logo-circle {
@@ -160,12 +162,24 @@ button:disabled {
   position: relative;
 }
 
+/* Distanziate ai tre lati (sinistra/centro/destra), non ammassate in un
+   angolo: su una carta posseduta ci sono sempre preferito+modifica+condividi,
+   e con "justify-content: space-between" tre elementi si distribuiscono da
+   soli su tutta la larghezza. Su una carta condivisa c'e' solo il preferito:
+   .tile-actions-single lo spinge a destra per non finire sotto al badge
+   "condivisa", che occupa l'angolo in alto a sinistra. */
 .tile-actions {
   position: absolute;
-  top: 4px;
-  right: 4px;
+  top: 6px;
+  left: 6px;
+  right: 6px;
   display: flex;
-  gap: 4px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tile-actions.tile-actions-single {
+  justify-content: flex-end;
 }
 
 .tile-action-btn {

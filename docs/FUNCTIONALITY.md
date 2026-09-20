@@ -67,8 +67,11 @@ le altre sono previste ma non ancora sviluppate.
   primario per riconoscerla, non il logo. Il logo del negozio, quando disponibile, è
   solo un cerchietto piccolo sotto al nome (le favicon ingrandite a piena carta
   risultavano piccole/sfocate); senza logo, nessun cerchietto, solo la scritta
-  centrata. Pulsanti azione (preferito/modifica/condividi) in alto a destra, badge
-  "condivisa" in alto a sinistra.
+  centrata (21px, con una lieve ombra per staccare meglio dallo sfondo). Pulsanti
+  azione (preferito/modifica/condividi) distanziati sinistra/centro/destra lungo
+  tutta la larghezza in alto, non ammassati in un angolo; su una carta condivisa
+  (un solo pulsante, il preferito) va a destra per non finire sotto al badge
+  "condivisa", che occupa l'angolo in alto a sinistra.
 - **[MVP]** Ricerca istantanea client-side (Fuse.js) su tutte le carte caricate in cache locale.
 - **[MVP]** Vista fullscreen del barcode con Screen Wake Lock (evita spegnimento schermo alla cassa),
   nome del negozio/carta in grande e in grassetto. Per EAN-13/EAN-8 il rendering ricentra il
