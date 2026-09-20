@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import StoreAutocomplete from "../components/StoreAutocomplete";
 import { api } from "../lib/api";
+import { BARCODE_FORMATS } from "../lib/barcodeFormats";
 import { refreshCards } from "../lib/cardCache";
 import { useOnlineStatus } from "../lib/useOnlineStatus";
 import type { BarcodeFormat, Store } from "../types";
@@ -40,11 +41,18 @@ export default function ScanCardPage() {
 
   const [barcodeValue, setBarcodeValue] = useState("");
   const [barcodeFormat, setBarcodeFormat] = useState<BarcodeFormat>("EAN13");
+  // Vero quando l'utente sceglie di scrivere il codice a mano invece di
+  // aspettare uno scan riuscito: senza, chi ha un barcode che la fotocamera
+  // (o l'OCR sulla foto) non riescono a leggere resterebbe bloccato senza
+  // alcun modo di aggiungere comunque la carta.
+  const [manualEntry, setManualEntry] = useState(false);
   const [label, setLabel] = useState("");
   const [storeQuery, setStoreQuery] = useState("");
   const [store, setStore] = useState<Store | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+
+  const showForm = !!barcodeValue || manualEntry;
 
   useEffect(() => {
     const reader = new BrowserMultiFormatReader();
@@ -72,7 +80,7 @@ export default function ScanCardPage() {
         }
         controlsRef.current = controls;
       })
-      .catch(() => setError("Impossibile accedere alla fotocamera. Usa il caricamento foto qui sotto."));
+      .catch(() => setError("Impossibile accedere alla fotocamera. Usa il caricamento foto o l'inserimento manuale qui sotto."));
 
     return () => {
       // Senza stop() lo stream della fotocamera resta attivo anche dopo aver
@@ -86,6 +94,14 @@ export default function ScanCardPage() {
   function handleCancel() {
     controlsRef.current?.stop();
     navigate("/");
+  }
+
+  function handleManualEntry() {
+    // La fotocamera resta accesa finche' non gliela si ferma esplicitamente:
+    // senza, potrebbe decodificare qualcosa mentre l'utente sta scrivendo a
+    // mano e sovrascrivergli il campo a sua insaputa.
+    controlsRef.current?.stop();
+    setManualEntry(true);
   }
 
   async function handlePhotoUpload(file: File) {
@@ -105,12 +121,12 @@ export default function ScanCardPage() {
   }
 
   async function handleSave() {
-    if (!barcodeValue || !label) return;
+    if (!barcodeValue.trim() || !label.trim()) return;
     setSaving(true);
     try {
       await api.createCard({
         label,
-        barcode_value: barcodeValue,
+        barcode_value: barcodeValue.trim(),
         barcode_format: barcodeFormat,
         store_id: store?.id,
       });
@@ -138,7 +154,7 @@ export default function ScanCardPage() {
         </div>
       )}
 
-      {!barcodeValue && (
+      {!showForm && (
         <>
           <video ref={videoRef} className="scan-video" muted playsInline />
           <p className="hint">Inquadra il barcode della carta.</p>
@@ -153,12 +169,38 @@ export default function ScanCardPage() {
               onChange={(e) => e.target.files?.[0] && handlePhotoUpload(e.target.files[0])}
             />
           </label>
+          <div className="or-divider">oppure</div>
+          <button className="secondary" onClick={handleManualEntry}>
+            Inserisci il codice a mano
+          </button>
         </>
       )}
 
-      {barcodeValue && (
+      {showForm && (
         <div className="card-form">
-          <p>Codice rilevato: <strong>{barcodeValue}</strong></p>
+          {manualEntry ? (
+            <p className="hint">
+              Scrivi il codice così come stampato sulla carta e scegli il formato giusto (se non lo
+              sai, prova con quello più simile all'aspetto del barcode: a barre verticali è quasi
+              sempre EAN13 o CODE128, un quadrato di puntini è QRCODE).
+            </p>
+          ) : (
+            <p>
+              Codice rilevato: <strong>{barcodeValue}</strong>
+            </p>
+          )}
+          <input
+            placeholder="Codice a barre"
+            value={barcodeValue}
+            onChange={(e) => setBarcodeValue(e.target.value)}
+          />
+          <select value={barcodeFormat} onChange={(e) => setBarcodeFormat(e.target.value as BarcodeFormat)}>
+            {BARCODE_FORMATS.map((f) => (
+              <option key={f} value={f}>
+                {f}
+              </option>
+            ))}
+          </select>
           <input
             placeholder="Nome carta (es. Esselunga Fidaty)"
             value={label}
@@ -171,12 +213,14 @@ export default function ScanCardPage() {
             }}
           />
           <StoreAutocomplete query={storeQuery} onQueryChange={setStoreQuery} selected={store} onSelect={setStore} />
-          <button disabled={saving || !label} onClick={handleSave}>
+          <button disabled={saving || !label.trim() || !barcodeValue.trim()} onClick={handleSave}>
             {saving ? "Salvataggio..." : "Salva carta"}
           </button>
-          <button className="secondary" onClick={() => setBarcodeValue("")}>
-            Riprova
-          </button>
+          {!manualEntry && (
+            <button className="secondary" onClick={() => setBarcodeValue("")}>
+              Riprova
+            </button>
+          )}
         </div>
       )}
 

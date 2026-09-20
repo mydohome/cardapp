@@ -1,10 +1,9 @@
 import { FormEvent, useState } from "react";
 import StoreAutocomplete from "./StoreAutocomplete";
 import { api } from "../lib/api";
+import { BARCODE_FORMATS } from "../lib/barcodeFormats";
 import { refreshCards } from "../lib/cardCache";
 import type { BarcodeFormat, Card, Store } from "../types";
-
-const FORMATS: BarcodeFormat[] = ["EAN13", "EAN8", "CODE128", "CODE39", "QRCODE", "PDF417", "AZTEC", "CODABAR"];
 
 export default function EditCardModal({ card, onClose }: { card: Card; onClose: () => void }) {
   const [label, setLabel] = useState(card.label);
@@ -65,7 +64,7 @@ export default function EditCardModal({ card, onClose }: { card: Card; onClose: 
             required
           />
           <select value={barcodeFormat} onChange={(e) => setBarcodeFormat(e.target.value as BarcodeFormat)}>
-            {FORMATS.map((f) => (
+            {BARCODE_FORMATS.map((f) => (
               <option key={f} value={f}>
                 {f}
               </option>

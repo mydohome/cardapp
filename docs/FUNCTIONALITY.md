@@ -17,7 +17,11 @@ le altre sono previste ma non ancora sviluppate.
   usata solo al volo per leggere il codice, non viene salvata: una volta letto il
   numero, il barcode viene sempre rigenerato identico (bwip-js, con il numero
   stampato sotto), quindi non serve conservare l'immagine originale.
-- **[MVP]** Inserimento manuale (codice + simbologia).
+- **[MVP]** Inserimento manuale (codice + simbologia), per quando né lo scan live né la
+  foto riescono a leggere il barcode (es. carta danneggiata/consumata, simbologia rara):
+  pulsante "Inserisci il codice a mano" nella schermata di scansione, che ferma la
+  fotocamera (altrimenti potrebbe sovrascrivere il campo mentre si scrive) e apre lo
+  stesso modulo di modifica carta, vuoto e compilabile a mano.
 
 ## 3. Riconoscimento negozio/logo
 - **[MVP]** OCR sulla foto (`pytesseract`, anche qui la foto non viene salvata) + fuzzy
