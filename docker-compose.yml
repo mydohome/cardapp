@@ -65,6 +65,19 @@ services:
     volumes:
       - ./backups:/backups
 
+  # Ricerca/aggiornamento automatico dei loghi negozio in base alle carte
+  # aggiunte (app/update_store_logos.py), a intervalli regolari (di default
+  # una volta a settimana, LOGO_UPDATE_INTERVAL_HOURS in .env). Riusa
+  # l'immagine backend: stesso codice, stesso accesso al database.
+  logo-updater:
+    build: ./backend
+    restart: unless-stopped
+    env_file: .env
+    command: ["python", "-m", "app.logo_update_scheduler"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+
 volumes:
   postgres_data:
   caddy_data:

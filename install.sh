@@ -81,6 +81,8 @@ REFRESH_TOKEN_EXPIRE_DAYS=30
 
 BACKUP_KEEP_LAST=14
 BACKUP_SCHEDULE_CRON=0 3 * * 0
+
+LOGO_UPDATE_INTERVAL_HOURS=168
 EOF
   chmod 600 "$ENV_FILE"
   echo "Creato $ENV_FILE con password e segreti generati automaticamente (permessi 600)."

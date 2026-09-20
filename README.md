@@ -117,6 +117,18 @@ in background.
   docker compose exec backup /usr/local/bin/restore.sh <timestamp_backup>
   ```
 
+## Aggiornamento automatico loghi negozio
+
+Il container `logo-updater` cerca e assegna un negozio/logo alle carte che ne sono
+ancora prive, a intervalli regolari (default una volta a settimana, configurabile via
+`LOGO_UPDATE_INTERVAL_HOURS` in `.env`): prova prima il fuzzy match contro il catalogo
+esistente, poi indovina un dominio dal nome della carta e lo verifica con una richiesta
+di rete reale prima di creare un nuovo negozio. Esecuzione manuale immediata:
+
+```bash
+docker compose exec backend python -m app.update_store_logos
+```
+
 ## Deploy di produzione (dietro Nginx Proxy Manager)
 
 Il `docker-compose.yml` alla radice è pensato per sviluppo/uso locale (con Caddy

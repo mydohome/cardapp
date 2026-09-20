@@ -3,6 +3,7 @@ import type { IScannerControls } from "@zxing/browser";
 import type { Result } from "@zxing/library";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import StoreAutocomplete from "../components/StoreAutocomplete";
 import { api } from "../lib/api";
 import { refreshCards } from "../lib/cardCache";
 import { useOnlineStatus } from "../lib/useOnlineStatus";
@@ -40,6 +41,7 @@ export default function ScanCardPage() {
   const [barcodeValue, setBarcodeValue] = useState("");
   const [barcodeFormat, setBarcodeFormat] = useState<BarcodeFormat>("EAN13");
   const [label, setLabel] = useState("");
+  const [storeQuery, setStoreQuery] = useState("");
   const [store, setStore] = useState<Store | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -95,6 +97,7 @@ export default function ScanCardPage() {
       if (result.matched_store) {
         setStore(result.matched_store);
         setLabel(result.matched_store.name);
+        setStoreQuery(result.matched_store.name);
       }
     } catch (err) {
       setError((err as Error).message);
@@ -159,9 +162,15 @@ export default function ScanCardPage() {
           <input
             placeholder="Nome carta (es. Esselunga Fidaty)"
             value={label}
-            onChange={(e) => setLabel(e.target.value)}
+            onChange={(e) => {
+              setLabel(e.target.value);
+              // Comodita': finche' non si sceglie un negozio dai suggerimenti,
+              // la ricerca segue quello che si scrive qui, cosi' il logo si
+              // suggerisce da solo senza dover scrivere il nome due volte.
+              if (!store) setStoreQuery(e.target.value);
+            }}
           />
-          {store && <p>Negozio riconosciuto: {store.name}</p>}
+          <StoreAutocomplete query={storeQuery} onQueryChange={setStoreQuery} selected={store} onSelect={setStore} />
           <button disabled={saving || !label} onClick={handleSave}>
             {saving ? "Salvataggio..." : "Salva carta"}
           </button>

@@ -19,3 +19,5 @@ redis==5.0.8
 Pillow==10.4.0
 pytesseract==0.3.13
 pyzbar==0.1.9
+# Per app/update_store_logos.py: verifica se un dominio candidato serve una favicon.
+requests==2.32.3

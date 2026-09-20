@@ -92,50 +92,69 @@ button:disabled {
   margin-bottom: 24px;
 }
 
+/* Il logo del negozio riempie l'intero badge invece di stare in un cerchietto
+   in alto: la scritta resta sempre leggibile su una fascia scura in basso,
+   sopra qualunque immagine (chiara, scura, con o senza logo). */
 .card-tile {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  padding: 14px 12px;
-  background: #1f2937;
+  position: relative;
+  display: block;
+  aspect-ratio: 1 / 1;
   border-radius: 12px;
+  overflow: hidden;
+  background: #1f2937;
   text-decoration: none;
   color: white;
-  position: relative;
 }
 
-.card-logo {
-  width: 58px;
-  height: 58px;
-  border-radius: 50%;
+.card-tile-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  background: #374151;
 }
 
-.card-logo.placeholder {
+.card-tile-bg-placeholder {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: bold;
-  font-size: 24px;
+  font-weight: 800;
+  font-size: 42px;
+  color: rgba(255, 255, 255, 0.55);
+  background: linear-gradient(135deg, #374151, #1f2937);
+}
+
+.card-tile-label-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 22px 10px 8px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.6) 55%, rgba(0, 0, 0, 0) 100%);
 }
 
 .card-label {
-  font-size: 15px;
+  display: block;
+  font-size: 14px;
   font-weight: 700;
   text-align: center;
   line-height: 1.25;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
 }
 
 .badge {
   position: absolute;
-  top: 4px;
-  right: 4px;
+  top: 6px;
+  right: 6px;
   font-size: 10px;
   background: #2563eb;
   padding: 2px 6px;
   border-radius: 999px;
+}
+
+.badge-shared {
+  left: 6px;
+  right: auto;
 }
 
 .card-tile-wrapper {
@@ -158,7 +177,11 @@ button:disabled {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: #374151;
+  /* Semi-trasparente + blur invece di un grigio pieno: resta leggibile sopra
+     qualunque logo (chiaro, scuro, bianco) ora che riempie tutto il badge. */
+  background: rgba(17, 24, 39, 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   font-size: 13px;
   line-height: 1;
 }
@@ -346,6 +369,29 @@ button:disabled {
   font-size: 14px;
 }
 
+.store-suggestion {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.store-suggestion-logo {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  object-fit: cover;
+  background: #4b5563;
+  flex-shrink: 0;
+}
+
+.store-suggestion-logo.placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+}
+
 .danger-zone {
   border-top: 1px solid #374151;
   padding-top: 12px;
@@ -475,8 +521,15 @@ button.danger {
 
 .bottom-nav-item.active {
   color: #ffffff;
-  background: linear-gradient(135deg, rgba(37, 99, 235, 0.55), rgba(7, 100, 246, 0.35));
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  /* Stesso gradiente PIENO del banner (#2563eb -> #0764f6), non velato di
+     trasparenza come prima: mescolato con lo sfondo scuro della pillola
+     "liquid glass", quel blu diventava un blu navy smorto, percepibile
+     come un colore diverso da quello vivido del banner anche se il valore
+     esadecimale di partenza era lo stesso. */
+  background: linear-gradient(135deg, #2563eb 0%, #0764f6 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    0 2px 8px rgba(37, 99, 235, 0.5);
 }
 
 .bottom-nav-icon {

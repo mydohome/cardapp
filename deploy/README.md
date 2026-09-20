@@ -113,3 +113,15 @@ Ripristino manuale:
 ```bash
 docker compose exec backup /usr/local/bin/restore.sh <timestamp_backup>
 ```
+
+## Aggiornamento automatico loghi negozio
+
+Il container `logo-updater` (stessa immagine di `app`, comando diverso) cerca e
+assegna un negozio/logo alle carte che ne sono ancora prive, a intervalli regolari
+(default una volta a settimana, configurabile via `LOGO_UPDATE_INTERVAL_HOURS` in
+`.env`, relativo all'avvio del container - non un orario fisso come il backup).
+Esecuzione manuale immediata:
+
+```bash
+docker compose exec app python -m app.update_store_logos
+```

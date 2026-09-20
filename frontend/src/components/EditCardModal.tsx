@@ -1,4 +1,5 @@
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
+import StoreAutocomplete from "./StoreAutocomplete";
 import { api } from "../lib/api";
 import { refreshCards } from "../lib/cardCache";
 import type { BarcodeFormat, Card, Store } from "../types";
@@ -11,28 +12,10 @@ export default function EditCardModal({ card, onClose }: { card: Card; onClose: 
   const [barcodeFormat, setBarcodeFormat] = useState<BarcodeFormat>(card.barcode_format);
   const [notes, setNotes] = useState(card.notes ?? "");
   const [storeQuery, setStoreQuery] = useState(card.store?.name ?? "");
-  const [storeResults, setStoreResults] = useState<Store[]>([]);
   const [selectedStore, setSelectedStore] = useState<Store | null>(card.store ?? null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
-
-  useEffect(() => {
-    // Non cercare se il campo mostra ancora il negozio gia' selezionato.
-    if (!storeQuery.trim() || (selectedStore && storeQuery === selectedStore.name)) {
-      setStoreResults([]);
-      return;
-    }
-    const timeout = setTimeout(() => {
-      api
-        .searchStores(storeQuery.trim())
-        .then(setStoreResults)
-        .catch(() => {
-          /* la ricerca negozio non e' essenziale al salvataggio: ignoriamo errori */
-        });
-    }, 250);
-    return () => clearTimeout(timeout);
-  }, [storeQuery, selectedStore]);
 
   async function handleSave(e: FormEvent) {
     e.preventDefault();
@@ -89,35 +72,12 @@ export default function EditCardModal({ card, onClose }: { card: Card; onClose: 
             ))}
           </select>
 
-          <div className="autocomplete">
-            <input
-              placeholder="Negozio (per il logo)"
-              value={storeQuery}
-              onChange={(e) => {
-                setStoreQuery(e.target.value);
-                setSelectedStore(null);
-              }}
-            />
-            {storeResults.length > 0 && (
-              <ul className="autocomplete-suggestions">
-                {storeResults.map((s) => (
-                  <li key={s.id}>
-                    <button
-                      type="button"
-                      className="secondary"
-                      onClick={() => {
-                        setSelectedStore(s);
-                        setStoreQuery(s.name);
-                        setStoreResults([]);
-                      }}
-                    >
-                      {s.name}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+          <StoreAutocomplete
+            query={storeQuery}
+            onQueryChange={setStoreQuery}
+            selected={selectedStore}
+            onSelect={setSelectedStore}
+          />
 
           <textarea
             placeholder="Note (opzionale)"

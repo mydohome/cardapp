@@ -26,14 +26,16 @@ export default function CardTile({
           <img
             src={card.store!.logo_url!}
             alt=""
-            className="card-logo"
+            className="card-tile-bg"
             onError={() => setLogoFailed(true)}
           />
         ) : (
-          <div className="card-logo placeholder">{card.label[0]?.toUpperCase()}</div>
+          <div className="card-tile-bg card-tile-bg-placeholder">{card.label[0]?.toUpperCase()}</div>
         )}
-        <span className="card-label">{card.label}</span>
-        {card.shared_by && <span className="badge">condivisa</span>}
+        {card.shared_by && <span className="badge badge-shared">condivisa</span>}
+        <div className="card-tile-label-bar">
+          <span className="card-label">{card.label}</span>
+        </div>
       </Link>
       <div className="tile-actions">
         <button

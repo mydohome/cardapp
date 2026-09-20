@@ -32,17 +32,36 @@ le altre sono previste ma non ancora sviluppate.
   senza toccare eventuali `logo_url` personalizzati a mano. Se un logo non compare per un
   negozio, va verificato con `curl` dal server e corretto nello script.
 - v2: embedding visivo del logo (CLIP) per match anche senza testo leggibile.
-- **[MVP]** Assegnazione/cambio manuale del negozio dalla modifica carta (ricerca per
-  nome), utile quando il match automatico fallisce o per correggerlo.
+- **[MVP]** Assegnazione/cambio manuale del negozio con autocomplete e anteprima del logo
+  (`StoreAutocomplete`, componente condiviso), sia in creazione (scansione/inserimento
+  manuale) sia in modifica carta: mentre si scrive il nome, l'app suggerisce un negozio
+  già noto in catalogo (con il suo logo) invece di aspettare solo il match OCR.
+- **[MVP]** Ricerca/aggiornamento automatico dei negozi in base alle carte davvero
+  aggiunte (`backend/app/update_store_logos.py`), non solo il catalogo statico di
+  seed_stores.py: per ogni carta senza negozio, prova prima il fuzzy match contro il
+  catalogo esistente, poi - se non trova nulla - indovina un dominio dal nome della
+  carta (ripulito da parole come "fidaty/card/club/...") e lo verifica con una
+  richiesta di rete reale prima di creare un nuovo negozio col logo scoperto (mai
+  a scatola chiusa). Schedulato automaticamente una volta a settimana
+  (`app/logo_update_scheduler.py`, servizio `logo-updater` in docker-compose,
+  intervallo configurabile via `LOGO_UPDATE_INTERVAL_HOURS`); eseguibile anche a mano
+  con `docker compose exec app python -m app.update_store_logos`.
 
 ## 4. Ricerca e visualizzazione
 - **[MVP]** Navigazione a tab bar in basso (Scan, Ricerca, Preferiti, Impostazioni), in
   stile "liquid glass" (pillola flottante traslucida con `backdrop-filter`, icone SVG
   lineari dedicate per funzione, non emoji), con banner brandizzato in alto (logo +
-  wordmark "CardApp" + tagline, dalla grafica fornita). "Ricerca" è la schermata
-  iniziale: banner → campo ricerca → griglia carte, così il campo non finisce mai sotto
-  al notch/Dynamic Island di iPhone (prima era troppo in alto). Scan e la vista
-  fullscreen del barcode restano a schermo intero, senza tab bar.
+  wordmark "CardApp" + tagline, dalla grafica fornita). Banner e tab attiva usano
+  **lo stesso gradiente pieno** (`#2563eb` → `#0764f6`, non velato di trasparenza sulla
+  tab per non farlo sembrare un blu diverso una volta mescolato con lo sfondo scuro
+  della pillola). "Ricerca" è la schermata iniziale: banner → campo ricerca → griglia
+  carte, così il campo non finisce mai sotto al notch/Dynamic Island di iPhone (prima
+  era troppo in alto). Scan e la vista fullscreen del barcode restano a schermo intero,
+  senza tab bar.
+- **[MVP]** Badge carta nella griglia: il logo del negozio riempie l'intero badge
+  (non più un cerchietto piccolo) con il nome sempre leggibile su una fascia scura in
+  basso, in grassetto, sopra qualunque immagine chiara o scura; senza logo, un'iniziale
+  grande su sfondo a gradiente al posto dell'icona rotta.
 - **[MVP]** Ricerca istantanea client-side (Fuse.js) su tutte le carte caricate in cache locale.
 - **[MVP]** Vista fullscreen del barcode con Screen Wake Lock (evita spegnimento schermo alla cassa),
   nome del negozio/carta in grande e in grassetto. Per EAN-13/EAN-8 il rendering ricentra il
