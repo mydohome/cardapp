@@ -62,12 +62,23 @@ le altre sono previste ma non ancora sviluppate.
   carte, così il campo non finisce mai sotto al notch/Dynamic Island di iPhone (prima
   era troppo in alto). Scan e la vista fullscreen del barcode restano a schermo intero,
   senza tab bar.
-- **[MVP]** Badge carta nella griglia: sfondo blu pieno (stessa palette di banner/tab
-  bar) con il nome della carta centrato, grande, in grassetto e bianco - il modo
+- **[MVP]** Badge carta nella griglia: sfondo a colori diversi per carta (per
+  distinguerle meglio a colpo d'occhio), invece di un unico blu uniforme - stesso
+  negozio, sempre stesso colore (calcolato dall'id negozio, non dai pixel del logo:
+  leggere il colore dominante da un'immagine esterna richiederebbe caricarla su un
+  `<canvas>`, che per la maggior parte delle favicon fallisce per via del CORS -
+  "tainted canvas" - quindi non sarebbe affidabile); senza negozio, il colore si
+  calcola dalla carta stessa, così resta fisso nel tempo invece di cambiare ad ogni
+  apertura come farebbe un `Math.random()` puro. Tavolozza di 10 colori scelta a
+  mano (`lib/cardColors.ts`), verificando che ogni coppia di sfumatura rispetti un
+  contrasto di almeno 4.5:1 con testo bianco su ENTRAMBI gli estremi del gradiente
+  (calcolo WCAG, non a occhio) - niente giallo o tonalità chiare comunque illeggibili
+  con la scritta bianca sopra. Nome della carta centrato, grande, in grassetto e
+  bianco (21px, con una lieve ombra per staccare meglio dallo sfondo) - il modo
   primario per riconoscerla, non il logo. Il logo del negozio, quando disponibile, è
   solo un cerchietto piccolo sotto al nome (le favicon ingrandite a piena carta
   risultavano piccole/sfocate); senza logo, nessun cerchietto, solo la scritta
-  centrata (21px, con una lieve ombra per staccare meglio dallo sfondo). Pulsanti
+  centrata. Pulsanti
   azione (preferito/modifica/condividi) distanziati sinistra/centro/destra lungo
   tutta la larghezza in alto, non ammassati in un angolo; su una carta condivisa
   (un solo pulsante, il preferito) va a destra per non finire sotto al badge

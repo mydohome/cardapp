@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { cardTileColor } from "../lib/cardColors";
 import type { Card } from "../types";
 
 export default function CardTile({
@@ -19,10 +20,15 @@ export default function CardTile({
   const [logoFailed, setLogoFailed] = useState(false);
   const showLogo = card.store?.logo_url && !logoFailed;
   const isOwn = !card.shared_by;
+  const { from, to } = cardTileColor(card.store?.id, card.id);
 
   return (
     <div className="card-tile-wrapper">
-      <Link to={`/card/${card.id}`} className="card-tile">
+      <Link
+        to={`/card/${card.id}`}
+        className="card-tile"
+        style={{ background: `linear-gradient(135deg, ${from} 0%, ${to} 100%)` }}
+      >
         {card.shared_by && <span className="badge badge-shared">condivisa</span>}
         <span className="card-label">{card.label}</span>
         {showLogo && (
