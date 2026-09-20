@@ -87,6 +87,7 @@ SEED_STORES = [
     {"name": "Eni", "aliases": "eni,eni enjoy", "category": "carburante", "logo_url": _google_favicon("eni.com")},
     {"name": "Q8", "aliases": "q8,q8easy", "category": "carburante", "logo_url": _google_favicon("q8.it")},
     {"name": "IP", "aliases": "ip,ip club,italiana petroli", "category": "carburante", "logo_url": _google_favicon("ip-com.it")},
+    {"name": "Elite", "aliases": "elite,supermercati elite,superelite", "category": "supermercato", "logo_url": _google_favicon("superelite.it")},
 ]
 
 
