@@ -1,4 +1,5 @@
 import { BarcodeFormat as ZXingFormat, BrowserMultiFormatReader } from "@zxing/browser";
+import type { IScannerControls } from "@zxing/browser";
 import type { Result } from "@zxing/library";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -32,7 +33,7 @@ function normalizeScanResult(result: Result): { value: string; format: BarcodeFo
 
 export default function ScanCardPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const readerRef = useRef<BrowserMultiFormatReader | null>(null);
+  const controlsRef = useRef<IScannerControls | null>(null);
   const navigate = useNavigate();
   const online = useOnlineStatus();
 
@@ -45,7 +46,7 @@ export default function ScanCardPage() {
 
   useEffect(() => {
     const reader = new BrowserMultiFormatReader();
-    readerRef.current = reader;
+    let cancelled = false;
 
     reader
       .decodeFromConstraints(
@@ -59,12 +60,31 @@ export default function ScanCardPage() {
           }
         }
       )
+      .then((controls) => {
+        // Se il componente e' gia' stato smontato (es. utente ha premuto
+        // "Indietro" prima che la fotocamera finisse di inizializzarsi),
+        // ferma subito lo stream invece di lasciarlo acceso in background.
+        if (cancelled) {
+          controls.stop();
+          return;
+        }
+        controlsRef.current = controls;
+      })
       .catch(() => setError("Impossibile accedere alla fotocamera. Usa il caricamento foto qui sotto."));
 
     return () => {
-      readerRef.current = null;
+      // Senza stop() lo stream della fotocamera resta attivo anche dopo aver
+      // lasciato la pagina (l'unmount da solo non ferma le tracce del MediaStream).
+      cancelled = true;
+      controlsRef.current?.stop();
+      controlsRef.current = null;
     };
   }, []);
+
+  function handleCancel() {
+    controlsRef.current?.stop();
+    navigate("/");
+  }
 
   async function handlePhotoUpload(file: File) {
     setError(null);
@@ -102,6 +122,11 @@ export default function ScanCardPage() {
 
   return (
     <div className="page">
+      <div className="header-actions">
+        <button className="secondary" onClick={handleCancel}>
+          ← Indietro
+        </button>
+      </div>
       <h1>Aggiungi carta</h1>
 
       {!online && (

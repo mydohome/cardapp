@@ -26,6 +26,16 @@ export default defineConfig({
         // completamente offline. I dati delle carte sono cachati separatamente
         // dall'app stessa in localStorage (vedi src/lib/cardCache.ts).
         globPatterns: ["**/*.{js,css,html,svg,png,ico}"],
+        // Senza questo, solo la richiesta esatta a "/" viene servita offline
+        // dalla cache (mappata automaticamente su index.html). L'app usa
+        // react-router lato client: rotte come /scan, /card/:id, /login non
+        // corrispondono a nessun file reale, quindi un caricamento diretto o
+        // un refresh su una di queste offline (es. la PWA che riapre l'ultima
+        // schermata) va in rete, fallisce e mostra una pagina bianca. Con
+        // navigateFallback, ogni richiesta di navigazione non precachata
+        // ricade comunque su index.html, che poi fa il routing client-side.
+        navigateFallback: "index.html",
+        navigateFallbackDenylist: [/^\/api\//],
         runtimeCaching: [
           {
             // Loghi negozio: possono provenire da domini esterni, quindi non

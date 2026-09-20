@@ -79,6 +79,11 @@ utilizzabili senza connessione** (es. al supermercato senza campo).
 - **[MVP]** Manifest + service worker (installabile su iPhone da Safari, "Aggiungi a Home").
 - **[MVP]** Precache dell'intera app shell (JS/CSS/HTML): l'app si apre e naviga tra le
   pagine anche a connessione completamente assente, non solo con dati gia' caricati.
+- **[MVP]** `navigateFallback` su `index.html` (Workbox): l'app usa routing client-side
+  (react-router), quindi rotte come `/scan` o `/card/:id` non corrispondono a file reali.
+  Senza questo, aprire direttamente una di queste rotte offline (es. la PWA che riapre
+  l'ultima schermata visitata) andava in rete, falliva e mostrava una pagina bianca;
+  `/api/` resta escluso dal fallback per non intercettare le chiamate al backend.
 - **[MVP]** Cache locale delle carte (localStorage) aggiornata a ogni apertura online
   dell'app: lista, ricerca istantanea (Fuse.js) e barcode fullscreen (bwip-js, generato
   client-side) funzionano tutti da questa cache, senza bisogno del backend.
