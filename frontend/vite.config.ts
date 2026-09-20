@@ -12,7 +12,7 @@ export default defineConfig({
         name: "CardApp - Carte fedeltà",
         short_name: "CardApp",
         description: "Gestione carte fedeltà con scansione barcode e condivisione",
-        theme_color: "#0047c2",
+        theme_color: "#2563eb",
         background_color: "#111827",
         display: "standalone",
         orientation: "portrait",

@@ -363,10 +363,14 @@ button.danger {
 .top-banner {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 12px;
   padding: calc(14px + env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) 14px
     max(18px, env(safe-area-inset-left));
-  background: linear-gradient(135deg, #0047c2 0%, #0764f6 100%);
+  /* Stesso blu dei pulsanti e della tab attiva in basso (#2563eb -> #0764f6),
+     non un blu diverso preso a se' dall'immagine del logo: cosi' il banner e
+     la tab bar sembrano la stessa palette invece di due brand diversi. */
+  background: linear-gradient(135deg, #2563eb 0%, #0764f6 100%);
   box-shadow: 0 2px 12px rgba(0, 30, 100, 0.35);
   flex-shrink: 0;
 }

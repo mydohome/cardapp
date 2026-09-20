@@ -103,8 +103,11 @@ in background.
 
 ## Backup e ripristino
 
-- Backup automatico ogni notte (cron nel container `backup`), salvato in `./backups/<timestamp>/`.
-- Rotazione: mantiene gli ultimi `BACKUP_KEEP_LAST` backup (default 7, in `.env`).
+- Backup automatico settimanale (cron nel container `backup`, orario configurabile via
+  `BACKUP_SCHEDULE_CRON` in `.env`, default domenica alle 3:00), salvato in
+  `./backups/<timestamp>/`.
+- Rotazione: ad ogni backup, quelli più vecchi degli ultimi `BACKUP_KEEP_LAST` vengono
+  cancellati automaticamente (default 7, in `.env`).
 - Backup manuale immediato:
   ```bash
   docker compose exec backup /usr/local/bin/backup.sh

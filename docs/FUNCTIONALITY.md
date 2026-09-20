@@ -92,8 +92,12 @@ le altre sono previste ma non ancora sviluppate.
 - Pannello amministrativo per il catalogo negozi/loghi (merge duplicati, upload logo manuale).
 
 ## 7. Backup e ripristino (locale)
-- **[MVP]** Container `backup` schedulato (cron) → `pg_dump` del database su `./backups`.
-- **[MVP]** Rotazione automatica (mantiene ultimi N backup, configurabile via `BACKUP_KEEP_LAST`).
+- **[MVP]** Container `backup` schedulato via cron → `pg_dump` del database su `./backups`,
+  di default settimanale (domenica alle 3:00), orario configurabile per intero tramite
+  `BACKUP_SCHEDULE_CRON` (in `.env`): il container legge la variabile e rigenera la
+  crontab ad ogni avvio, non è un orario fisso incorporato nell'immagine.
+- **[MVP]** Rotazione automatica: ad ogni backup, quelli più vecchi degli ultimi
+  `BACKUP_KEEP_LAST` (in `.env`) vengono cancellati automaticamente.
 - **[MVP]** Script `restore.sh` per ripristino manuale da un backup specifico.
 - Export utente singolo (zip con metadati + immagini), scaricabile dall'app.
 

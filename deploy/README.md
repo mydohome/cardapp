@@ -104,9 +104,11 @@ same-origin e non serve esporre il backend separatamente su NPM.
 
 ## Backup
 
-Il container `backup` esegue ogni notte (cron) un `pg_dump` del database in
-`./backups/<timestamp>/`, con rotazione automatica (`BACKUP_KEEP_LAST`
-in `.env`). Ripristino manuale:
+Il container `backup` esegue settimanalmente (cron, orario configurabile via
+`BACKUP_SCHEDULE_CRON` in `.env`, default domenica alle 3:00) un `pg_dump` del
+database in `./backups/<timestamp>/`, con rotazione automatica: ad ogni backup
+i più vecchi degli ultimi `BACKUP_KEEP_LAST` (in `.env`) vengono cancellati.
+Ripristino manuale:
 
 ```bash
 docker compose exec backup /usr/local/bin/restore.sh <timestamp_backup>
