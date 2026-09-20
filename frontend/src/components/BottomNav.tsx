@@ -1,28 +1,42 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
+import type { ComponentType } from "react";
+import { ScanIcon, SearchIcon, SettingsIcon, StarIcon } from "./icons";
 
-const TABS: { to: string; icon: string; label: string; end?: boolean }[] = [
-  { to: "/scan", icon: "＋", label: "Scan" },
-  { to: "/", icon: "🔍", label: "Ricerca", end: true },
-  { to: "/favorites", icon: "★", label: "Preferiti" },
-  { to: "/settings", icon: "⚙", label: "Impostazioni" },
+interface Tab {
+  to: string;
+  label: string;
+  Icon: ComponentType<{ className?: string; filled?: boolean }>;
+  end?: boolean;
+}
+
+const TABS: Tab[] = [
+  { to: "/scan", label: "Scan", Icon: ScanIcon },
+  { to: "/", label: "Ricerca", Icon: SearchIcon, end: true },
+  { to: "/favorites", label: "Preferiti", Icon: StarIcon },
+  { to: "/settings", label: "Impostazioni", Icon: SettingsIcon },
 ];
 
 export default function BottomNav() {
+  const location = useLocation();
+
   return (
     <nav className="bottom-nav">
-      {TABS.map((tab) => (
-        <NavLink
-          key={tab.to}
-          to={tab.to}
-          end={tab.end}
-          className={({ isActive }) => "bottom-nav-item" + (isActive ? " active" : "")}
-        >
-          <span className="bottom-nav-icon" aria-hidden="true">
-            {tab.icon}
-          </span>
-          <span className="bottom-nav-label">{tab.label}</span>
-        </NavLink>
-      ))}
+      {TABS.map(({ to, label, Icon, end }) => {
+        const isActive = end ? location.pathname === to : location.pathname.startsWith(to);
+        return (
+          <NavLink
+            key={to}
+            to={to}
+            end={end}
+            className={"bottom-nav-item" + (isActive ? " active" : "")}
+          >
+            <span className="bottom-nav-icon">
+              <Icon className="bottom-nav-svg" filled={label === "Preferiti" && isActive} />
+            </span>
+            <span className="bottom-nav-label">{label}</span>
+          </NavLink>
+        );
+      })}
     </nav>
   );
 }

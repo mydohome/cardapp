@@ -7,12 +7,12 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.svg"],
+      includeAssets: ["favicon.png", "apple-touch-icon.png", "logo-badge.png"],
       manifest: {
         name: "CardApp - Carte fedeltà",
         short_name: "CardApp",
         description: "Gestione carte fedeltà con scansione barcode e condivisione",
-        theme_color: "#111827",
+        theme_color: "#0047c2",
         background_color: "#111827",
         display: "standalone",
         orientation: "portrait",

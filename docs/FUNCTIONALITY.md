@@ -36,11 +36,13 @@ le altre sono previste ma non ancora sviluppate.
   nome), utile quando il match automatico fallisce o per correggerlo.
 
 ## 4. Ricerca e visualizzazione
-- **[MVP]** Navigazione a tab bar in basso (Scan, Ricerca, Preferiti, Impostazioni), con
-  banner in alto (nome + logo app, grafica definitiva da sostituire). "Ricerca" è la
-  schermata iniziale: banner → campo ricerca → griglia carte, così il campo non finisce
-  mai sotto al notch/Dynamic Island di iPhone (prima era troppo in alto). Scan e la
-  vista fullscreen del barcode restano a schermo intero, senza tab bar.
+- **[MVP]** Navigazione a tab bar in basso (Scan, Ricerca, Preferiti, Impostazioni), in
+  stile "liquid glass" (pillola flottante traslucida con `backdrop-filter`, icone SVG
+  lineari dedicate per funzione, non emoji), con banner brandizzato in alto (logo +
+  wordmark "CardApp" + tagline, dalla grafica fornita). "Ricerca" è la schermata
+  iniziale: banner → campo ricerca → griglia carte, così il campo non finisce mai sotto
+  al notch/Dynamic Island di iPhone (prima era troppo in alto). Scan e la vista
+  fullscreen del barcode restano a schermo intero, senza tab bar.
 - **[MVP]** Ricerca istantanea client-side (Fuse.js) su tutte le carte caricate in cache locale.
 - **[MVP]** Vista fullscreen del barcode con Screen Wake Lock (evita spegnimento schermo alla cassa).
 - **[MVP]** Sezione "Recenti" per accesso rapido alle carte usate più spesso.
