@@ -1,4 +1,4 @@
-import type { BarcodeFormat, Card, Invite, Share, SharePermission, Store } from "../types";
+import type { BarcodeFormat, Card, Invite, Share, SharePermission, Store, User } from "../types";
 
 const API_BASE = "/api";
 
@@ -59,6 +59,10 @@ export const api = {
     localStorage.removeItem("access_token");
   },
 
+  me() {
+    return request<User>("/auth/me");
+  },
+
   listCards() {
     return request<Card[]>("/cards");
   },
@@ -82,6 +86,10 @@ export const api = {
 
   deleteCard(id: string) {
     return request<void>(`/cards/${id}`, { method: "DELETE" });
+  },
+
+  setFavorite(cardId: string, favorite: boolean) {
+    return request<Card>(`/cards/${cardId}/favorite`, { method: favorite ? "POST" : "DELETE" });
   },
 
   searchStores(q: string) {

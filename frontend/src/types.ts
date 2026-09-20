@@ -24,6 +24,14 @@ export interface Card {
   notes?: string | null;
   updated_at: string;
   shared_by?: string | null;
+  is_favorite: boolean;
+}
+
+export interface User {
+  id: string;
+  username: string;
+  email?: string | null;
+  display_name?: string | null;
 }
 
 export type SharePermission = "view" | "edit";

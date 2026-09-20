@@ -79,6 +79,7 @@ class Card(Base):
     owner = relationship("User", back_populates="cards")
     store = relationship("Store", back_populates="cards")
     shares = relationship("CardShare", back_populates="card", cascade="all, delete-orphan")
+    favorited_by = relationship("CardFavorite", back_populates="card", cascade="all, delete-orphan")
 
 
 class SharePermission(str, enum.Enum):
@@ -98,6 +99,23 @@ class CardShare(Base):
 
     card = relationship("Card", back_populates="shares")
     shared_with_user = relationship("User")
+
+
+class CardFavorite(Base):
+    """Preferito personale: tabella separata (non un campo su Card) perche' una
+    carta condivisa e' la stessa riga per tutti - un booleano su Card avrebbe
+    reso "preferita" la carta per il proprietario ogni volta che un utente con
+    cui e' condivisa la segna come tale."""
+
+    __tablename__ = "card_favorites"
+    __table_args__ = (UniqueConstraint("user_id", "card_id"),)
+
+    id = Column(UUID(as_uuid=False), primary_key=True, default=gen_uuid)
+    user_id = Column(UUID(as_uuid=False), ForeignKey("users.id"), nullable=False)
+    card_id = Column(UUID(as_uuid=False), ForeignKey("cards.id"), nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    card = relationship("Card", back_populates="favorited_by")
 
 
 class ShareInvite(Base):

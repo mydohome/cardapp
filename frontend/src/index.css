@@ -71,13 +71,6 @@ button:disabled {
   color: #f87171;
 }
 
-.list-header {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 16px;
-  flex-wrap: wrap;
-}
-
 .search-input {
   flex: 1;
   min-width: 200px;
@@ -357,20 +350,88 @@ button.danger {
   background: #7f1d1d;
 }
 
-.fab-scan {
-  position: fixed;
-  right: max(20px, env(safe-area-inset-right));
-  bottom: calc(20px + env(safe-area-inset-bottom));
-  width: 56px;
-  height: 56px;
-  padding: 0;
-  border-radius: 50%;
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.top-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: calc(12px + env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) 12px
+    max(16px, env(safe-area-inset-left));
+  background: #1f2937;
+  border-bottom: 1px solid #374151;
+  flex-shrink: 0;
+}
+
+.top-banner-logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
   background: #2563eb;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 26px;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.top-banner-title {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.app-shell-content {
+  flex: 1;
+  min-height: 0;
+}
+
+/* Contenuto delle schermate a tab (Ricerca/Preferiti/Impostazioni): il banner
+   in alto assorbe gia' il safe-area-inset-top, qui serve solo spazio laterale
+   e in basso, abbastanza da non finire nascosto dietro la tab bar fissa. */
+.tab-page {
+  padding: 16px max(16px, env(safe-area-inset-right)) calc(76px + env(safe-area-inset-bottom))
+    max(16px, env(safe-area-inset-left));
+}
+
+.search-input-full {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.bottom-nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  background: #1f2937;
+  border-top: 1px solid #374151;
+  padding-bottom: env(safe-area-inset-bottom);
+  z-index: 40;
+}
+
+.bottom-nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 4px 6px;
+  color: #9ca3af;
+  text-decoration: none;
+  font-size: 11px;
+}
+
+.bottom-nav-item.active {
+  color: #60a5fa;
+}
+
+.bottom-nav-icon {
+  font-size: 20px;
   line-height: 1;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
-  z-index: 50;
 }

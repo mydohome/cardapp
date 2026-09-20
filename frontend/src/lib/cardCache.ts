@@ -53,3 +53,7 @@ export function getRecentCards(): Card[] {
   const ids: string[] = JSON.parse(localStorage.getItem(RECENTS_KEY) || "[]");
   return ids.map((id) => getCard(id)).filter((c): c is Card => !!c);
 }
+
+export function getFavoriteCards(): Card[] {
+  return getCachedCards().filter((c) => c.is_favorite);
+}

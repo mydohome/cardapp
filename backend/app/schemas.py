@@ -85,6 +85,7 @@ class CardOut(BaseModel):
     notes: Optional[str] = None
     updated_at: datetime
     shared_by: Optional[str] = None  # nome del proprietario, valorizzato solo per carte condivise
+    is_favorite: bool = False  # personale per utente: valorizzato a mano dal router, non sta su Card
 
     class Config:
         from_attributes = True

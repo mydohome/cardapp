@@ -36,17 +36,24 @@ le altre sono previste ma non ancora sviluppate.
   nome), utile quando il match automatico fallisce o per correggerlo.
 
 ## 4. Ricerca e visualizzazione
+- **[MVP]** Navigazione a tab bar in basso (Scan, Ricerca, Preferiti, Impostazioni), con
+  banner in alto (nome + logo app, grafica definitiva da sostituire). "Ricerca" è la
+  schermata iniziale: banner → campo ricerca → griglia carte, così il campo non finisce
+  mai sotto al notch/Dynamic Island di iPhone (prima era troppo in alto). Scan e la
+  vista fullscreen del barcode restano a schermo intero, senza tab bar.
 - **[MVP]** Ricerca istantanea client-side (Fuse.js) su tutte le carte caricate in cache locale.
 - **[MVP]** Vista fullscreen del barcode con Screen Wake Lock (evita spegnimento schermo alla cassa).
 - **[MVP]** Sezione "Recenti" per accesso rapido alle carte usate più spesso.
-- **[MVP]** Pulsante di scansione anche come FAB (badge circolare) in basso a destra
-  nella lista carte, oltre a quello nell'header, per un accesso più comodo a una mano.
+- **[MVP]** Preferiti: tab dedicato con le carte segnate con la stella (☆/★ su ogni carta).
+  È una preferenza personale per utente (tabella separata `card_favorites`), non un campo
+  sulla carta: segnare come preferita una carta condivisa non la rende tale anche per chi
+  l'ha condivisa, e viceversa.
 - **[MVP]** Modifica (nome, codice, formato, negozio, note) ed eliminazione di una carta
   posseduta, dalla lista carte (pulsante ✎). Un utente con permesso "può modificare" su
   una carta condivisa può già farlo via API, ma non ha ancora un pulsante nell'interfaccia
   per questo (solo il proprietario vede ✎ nella lista) — eliminare resta comunque
   possibile solo al proprietario.
-- Ordinamento per categoria, tag personalizzati, preferiti.
+- Ordinamento per categoria, tag personalizzati.
 
 ## 5. Multiutente e condivisione
 - **[MVP]** Modello dati: `Card` (owner) + `CardShare` (utente destinatario, permesso view/edit).
