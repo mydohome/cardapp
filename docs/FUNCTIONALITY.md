@@ -62,10 +62,11 @@ le altre sono previste ma non ancora sviluppate.
   carte, così il campo non finisce mai sotto al notch/Dynamic Island di iPhone (prima
   era troppo in alto). Scan e la vista fullscreen del barcode restano a schermo intero,
   senza tab bar.
-- **[MVP]** Badge carta nella griglia: il logo del negozio riempie l'intero badge
-  (non più un cerchietto piccolo) con il nome sempre leggibile su una fascia scura in
-  basso, in grassetto, sopra qualunque immagine chiara o scura; senza logo, un'iniziale
-  grande su sfondo a gradiente al posto dell'icona rotta.
+- **[MVP]** Badge carta nella griglia: sfondo blu pieno (stessa palette di banner/tab
+  bar) con il nome della carta grande, in grassetto e bianco - il modo primario per
+  riconoscerla, non il logo. Il logo del negozio, quando disponibile, è solo un
+  cerchietto piccolo in basso a destra (le favicon ingrandite a piena carta
+  risultavano piccole/sfocate); senza logo, nessun cerchietto, solo la scritta.
 - **[MVP]** Ricerca istantanea client-side (Fuse.js) su tutte le carte caricate in cache locale.
 - **[MVP]** Vista fullscreen del barcode con Screen Wake Lock (evita spegnimento schermo alla cassa),
   nome del negozio/carta in grande e in grassetto. Per EAN-13/EAN-8 il rendering ricentra il

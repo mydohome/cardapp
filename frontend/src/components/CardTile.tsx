@@ -14,7 +14,8 @@ export default function CardTile({
   onToggleFavorite: (card: Card) => void;
 }) {
   // Se il logo non e' in cache e siamo offline (o l'URL non e' piu' raggiungibile),
-  // si passa al placeholder invece di mostrare un'icona rotta.
+  // si nasconde il cerchietto invece di mostrare un'icona rotta: la scritta
+  // grande resta comunque il modo principale di riconoscere la carta.
   const [logoFailed, setLogoFailed] = useState(false);
   const showLogo = card.store?.logo_url && !logoFailed;
   const isOwn = !card.shared_by;
@@ -22,20 +23,13 @@ export default function CardTile({
   return (
     <div className="card-tile-wrapper">
       <Link to={`/card/${card.id}`} className="card-tile">
-        {showLogo ? (
-          <img
-            src={card.store!.logo_url!}
-            alt=""
-            className="card-tile-bg"
-            onError={() => setLogoFailed(true)}
-          />
-        ) : (
-          <div className="card-tile-bg card-tile-bg-placeholder">{card.label[0]?.toUpperCase()}</div>
-        )}
         {card.shared_by && <span className="badge badge-shared">condivisa</span>}
-        <div className="card-tile-label-bar">
-          <span className="card-label">{card.label}</span>
-        </div>
+        <span className={"card-label" + (showLogo ? " has-logo" : "")}>{card.label}</span>
+        {showLogo && (
+          <span className="card-tile-logo-circle">
+            <img src={card.store!.logo_url!} alt="" onError={() => setLogoFailed(true)} />
+          </span>
+        )}
       </Link>
       <div className="tile-actions">
         <button

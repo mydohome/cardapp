@@ -92,54 +92,56 @@ button:disabled {
   margin-bottom: 24px;
 }
 
-/* Il logo del negozio riempie l'intero badge invece di stare in un cerchietto
-   in alto: la scritta resta sempre leggibile su una fascia scura in basso,
-   sopra qualunque immagine (chiara, scura, con o senza logo). */
+/* Sfondo blu pieno (stessa palette di banner/tab bar) invece del logo a
+   tutto badge: le favicon sono spesso piccole/sfocate se ingrandite a
+   riempire l'intero riquadro. La scritta bianca e grande resta il modo
+   primario di riconoscere la carta; il logo, quando c'e', e' solo un
+   cerchietto piccolo in un angolo, mai il protagonista del badge. */
 .card-tile {
   position: relative;
-  display: block;
+  display: flex;
+  align-items: flex-end;
   aspect-ratio: 1 / 1;
   border-radius: 12px;
-  overflow: hidden;
-  background: #1f2937;
+  padding: 14px;
+  background: linear-gradient(135deg, #2563eb 0%, #0764f6 100%);
   text-decoration: none;
   color: white;
-}
-
-.card-tile-bg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.card-tile-bg-placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  font-size: 42px;
-  color: rgba(255, 255, 255, 0.55);
-  background: linear-gradient(135deg, #374151, #1f2937);
-}
-
-.card-tile-label-bar {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  padding: 22px 10px 8px;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.6) 55%, rgba(0, 0, 0, 0) 100%);
+  overflow: hidden;
 }
 
 .card-label {
   display: block;
-  font-size: 14px;
-  font-weight: 700;
-  text-align: center;
-  line-height: 1.25;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.22;
+  color: #ffffff;
+}
+
+.card-label.has-logo {
+  padding-right: 34px; /* non finire sotto al cerchietto del logo */
+}
+
+.card-tile-logo-circle {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  flex-shrink: 0;
+}
+
+.card-tile-logo-circle img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .badge {
