@@ -89,7 +89,7 @@ export default function EditCardModal({ card, onClose }: { card: Card; onClose: 
             ))}
           </select>
 
-          <div className="store-search">
+          <div className="autocomplete">
             <input
               placeholder="Negozio (per il logo)"
               value={storeQuery}
@@ -99,7 +99,7 @@ export default function EditCardModal({ card, onClose }: { card: Card; onClose: 
               }}
             />
             {storeResults.length > 0 && (
-              <ul className="store-suggestions">
+              <ul className="autocomplete-suggestions">
                 {storeResults.map((s) => (
                   <li key={s.id}>
                     <button

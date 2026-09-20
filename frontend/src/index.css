@@ -257,10 +257,12 @@ button:disabled {
   align-items: center;
   justify-content: center;
   gap: 16px;
-  /* Centrare va fatto sull'area davvero visibile: in orizzontale il notch/Dynamic
-     Island crea un safe-area-inset asimmetrico (a sinistra o a destra a seconda
-     della rotazione), altrimenti il barcode risulta centrato sulla larghezza
-     totale del viewport ma con una fetta "mangiata" dal notch, apparendo spostato. */
+  /* Centrare va fatto sull'area davvero visibile (in landscape il notch/Dynamic
+     Island crea un safe-area-inset asimmetrico), ma NON e' questa la causa del
+     barcode che appariva spostato a destra: quella era invece bwip-js che, per
+     EAN-13/EAN-8, non riservava lo stesso quiet space a destra riservato a
+     sinistra per la cifra iniziale - vedi "guardwhitespace" in
+     CardFullscreenPage.tsx, verificato pixel per pixel sul canvas grezzo. */
   padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right))
     max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
   box-sizing: border-box;
@@ -311,18 +313,20 @@ button:disabled {
   cursor: pointer;
 }
 
-.store-search {
+/* Generico: usato sia per la ricerca negozio (assegnazione logo) sia per
+   l'autocomplete utenti nella condivisione. */
+.autocomplete {
   position: relative;
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.store-search input {
+.autocomplete input {
   width: 100%;
 }
 
-.store-suggestions {
+.autocomplete-suggestions {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -331,7 +335,7 @@ button:disabled {
   gap: 4px;
 }
 
-.store-suggestions button {
+.autocomplete-suggestions button {
   width: 100%;
   text-align: left;
   padding: 8px 10px;

@@ -41,6 +41,17 @@ class UserOut(BaseModel):
         from_attributes = True
 
 
+class UserSummary(BaseModel):
+    """Per l'autocomplete nella condivisione: mai email o altri dati privati."""
+
+    id: str
+    username: str
+    display_name: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
 class Token(BaseModel):
     access_token: str
     token_type: str = "bearer"
@@ -104,6 +115,23 @@ class ShareCreate(BaseModel):
 
 
 class ShareOut(BaseModel):
+    user_id: str
+    username: str
+    display_name: Optional[str] = None
+    permission: SharePermission
+
+
+class LibraryShareCreate(BaseModel):
+    username: str
+    permission: SharePermission = SharePermission.VIEW
+
+    @field_validator("username", mode="before")
+    @classmethod
+    def _normalize_username(cls, value: str) -> str:
+        return normalize_username(value)
+
+
+class LibraryShareOut(BaseModel):
     user_id: str
     username: str
     display_name: Optional[str] = None

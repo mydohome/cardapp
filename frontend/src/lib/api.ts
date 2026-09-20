@@ -1,4 +1,4 @@
-import type { BarcodeFormat, Card, Invite, Share, SharePermission, Store, User } from "../types";
+import type { BarcodeFormat, Card, Invite, Share, SharePermission, Store, User, UserSummary } from "../types";
 
 const API_BASE = "/api";
 
@@ -126,5 +126,24 @@ export const api = {
 
   acceptInvite(token: string) {
     return request<{ status: string; card_id: string }>(`/invites/${token}/accept`, { method: "POST" });
+  },
+
+  searchUsers(q: string) {
+    return request<UserSummary[]>(`/users?q=${encodeURIComponent(q)}`);
+  },
+
+  listLibraryShares() {
+    return request<Share[]>("/library-shares");
+  },
+
+  shareLibrary(username: string, permission: SharePermission = "view") {
+    return request<void>("/library-shares", {
+      method: "POST",
+      body: JSON.stringify({ username, permission }),
+    });
+  },
+
+  revokeLibraryShare(userId: string) {
+    return request<void>(`/library-shares/${userId}`, { method: "DELETE" });
   },
 };

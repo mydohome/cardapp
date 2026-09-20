@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import Base, engine
-from app.routers import auth, cards, invites, shares, stores
+from app.routers import auth, cards, invites, library_shares, shares, stores, users
 
 app = FastAPI(title="CardApp API")
 
@@ -17,7 +17,9 @@ app.include_router(auth.router)
 app.include_router(cards.router)
 app.include_router(stores.router)
 app.include_router(shares.router)
+app.include_router(library_shares.router)
 app.include_router(invites.router)
+app.include_router(users.router)
 
 
 @app.on_event("startup")

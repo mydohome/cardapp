@@ -34,6 +34,13 @@ export interface User {
   display_name?: string | null;
 }
 
+/** Per l'autocomplete nella condivisione: mai email, solo utenti gia' registrati. */
+export interface UserSummary {
+  id: string;
+  username: string;
+  display_name?: string | null;
+}
+
 export type SharePermission = "view" | "edit";
 
 export interface Share {

@@ -118,6 +118,24 @@ class CardFavorite(Base):
     card = relationship("Card", back_populates="favorited_by")
 
 
+class LibraryShare(Base):
+    """Condivisione dell'intera libreria di un utente con un altro: a differenza
+    di CardShare (una carta alla volta), qui l'accesso e' calcolato per
+    proprietario, quindi vale anche per le carte aggiunte in futuro."""
+
+    __tablename__ = "library_shares"
+    __table_args__ = (UniqueConstraint("owner_id", "shared_with_user_id"),)
+
+    id = Column(UUID(as_uuid=False), primary_key=True, default=gen_uuid)
+    owner_id = Column(UUID(as_uuid=False), ForeignKey("users.id"), nullable=False)
+    shared_with_user_id = Column(UUID(as_uuid=False), ForeignKey("users.id"), nullable=False)
+    permission = Column(Enum(SharePermission), default=SharePermission.VIEW)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    owner = relationship("User", foreign_keys=[owner_id])
+    shared_with_user = relationship("User", foreign_keys=[shared_with_user_id])
+
+
 class ShareInvite(Base):
     """Link di condivisione con token e scadenza, per invitare anche utenti non ancora registrati."""
 

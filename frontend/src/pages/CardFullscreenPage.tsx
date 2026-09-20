@@ -35,6 +35,14 @@ export default function CardFullscreenPage() {
         scale: 4,
         height: card.barcode_format === "QRCODE" ? 40 : 15,
         includetext: true,
+        // EAN-13/EAN-8 stampano la cifra iniziale FUORI dalle barre, nel
+        // quiet space sinistro: senza questa opzione bwip-js non riserva lo
+        // stesso spazio a destra, e il codice risulta visibilmente spostato
+        // verso destra nel canvas (root cause del problema segnalato, non
+        // il notch/safe-area come ipotizzato in precedenza - verificato
+        // pixel per pixel sul canvas grezzo). Per gli altri formati
+        // l'opzione viene ignorata senza effetti.
+        guardwhitespace: true,
       });
     } catch (err) {
       console.error("Errore rendering barcode", err);

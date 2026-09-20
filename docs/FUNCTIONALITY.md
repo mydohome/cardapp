@@ -45,6 +45,10 @@ le altre sono previste ma non ancora sviluppate.
   fullscreen del barcode restano a schermo intero, senza tab bar.
 - **[MVP]** Ricerca istantanea client-side (Fuse.js) su tutte le carte caricate in cache locale.
 - **[MVP]** Vista fullscreen del barcode con Screen Wake Lock (evita spegnimento schermo alla cassa).
+  Per EAN-13/EAN-8 il rendering usa `guardwhitespace` (bwip-js): senza, la cifra iniziale
+  stampata fuori dalle barre occupa spazio solo a sinistra, e il codice appare visibilmente
+  spostato a destra rispetto al centro dello schermo (bug verificato pixel per pixel sul
+  canvas grezzo, non era un problema di notch/safe-area come ipotizzato in un primo momento).
 - **[MVP]** Sezione "Recenti" per accesso rapido alle carte usate più spesso.
 - **[MVP]** Preferiti: tab dedicato con le carte segnate con la stella (☆/★ su ogni carta).
   È una preferenza personale per utente (tabella separata `card_favorites`), non un campo
@@ -62,10 +66,23 @@ le altre sono previste ma non ancora sviluppate.
 - **[MVP]** Interfaccia di condivisione: pulsante "condividi" (⇪) su ogni carta posseduta,
   apre un modal per condividere per username con permesso sola-lettura/modifica, vedere
   con chi è già condivisa e rimuovere una condivisione.
+- **[MVP]** Autocomplete sul campo username in ogni form di condivisione (`GET /api/users?q=`):
+  cerca tra gli utenti già registrati per username o nome visualizzato, esclude sempre se
+  stessi e non espone mai l'email. Serve solo a comodità: si può comunque digitare uno
+  username esatto senza selezionarlo dal suggerimento.
+- **[MVP]** Condivisione dell'intera libreria (Impostazioni → "Condividi l'intera libreria"):
+  a differenza di `CardShare` (una carta alla volta), `LibraryShare` vale per proprietario,
+  quindi copre anche le carte aggiunte dopo la condivisione, non è una fotografia del momento.
+  Una carta condivisa sia singolarmente sia via libreria non compare duplicata; se i due
+  permessi differiscono, quello più permissivo tra i due si applica alla modifica (i preferiti
+  bastano un accesso in lettura qualsiasi). Eliminare una carta resta comunque possibile solo
+  al proprietario, indipendentemente dal tipo di condivisione.
 - **[MVP]** Link di invito con token e scadenza (72h di default), generabile dallo stesso
   modal, per chi non ha ancora ricevuto una condivisione diretta ma ha già un account.
   Accettarlo (pagina `/invite/:token`) richiede login: se non sei autenticato, l'app ti
-  manda al login e riprende automaticamente l'accettazione subito dopo.
+  manda al login e riprende automaticamente l'accettazione subito dopo. Non esiste ancora
+  un equivalente link di invito per la condivisione dell'intera libreria (richiede username
+  di un utente già registrato).
 - Gruppi "famiglia": carte condivise automaticamente con tutti i membri del gruppo.
 - Invito via link utilizzabile anche da chi non ha ancora un account (oggi serve che
   l'amministratore crei prima l'utente via CLI).

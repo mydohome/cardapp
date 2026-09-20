@@ -1,5 +1,6 @@
 import { FormEvent, useEffect, useState } from "react";
 import { api } from "../lib/api";
+import UserAutocomplete from "./UserAutocomplete";
 import type { Card, Share, SharePermission } from "../types";
 
 export default function ShareModal({ card, onClose }: { card: Card; onClose: () => void }) {
@@ -77,13 +78,7 @@ export default function ShareModal({ card, onClose }: { card: Card; onClose: () 
         <h2>Condividi "{card.label}"</h2>
 
         <form className="card-form" onSubmit={handleShare}>
-          <input
-            placeholder="Username della persona"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            autoCapitalize="none"
-            autoCorrect="off"
-          />
+          <UserAutocomplete value={username} onChange={setUsername} />
           <select value={permission} onChange={(e) => setPermission(e.target.value as SharePermission)}>
             <option value="view">Sola lettura</option>
             <option value="edit">Può modificare</option>

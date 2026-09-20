@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.models import Card, CardFavorite, CardShare, SharePermission, User
+from app.models import Card, CardFavorite, CardShare, LibraryShare, SharePermission, User
 from app.recognition import decode_barcode, extract_text, match_store
 from app.schemas import CardCreate, CardOut, CardUpdate, PhotoRecognitionResult
 from app.security import get_current_user
@@ -44,12 +44,27 @@ def list_cards(db: Session = Depends(get_db), user: User = Depends(get_current_u
         .filter(CardShare.shared_with_user_id == user.id)
         .all()
     )
+    # Chi condivide l'intera libreria con questo utente: vale anche per le
+    # carte aggiunte dopo la condivisione, non solo per quelle di oggi.
+    library_owner_ids = [
+        ls.owner_id
+        for ls in db.query(LibraryShare).filter(LibraryShare.shared_with_user_id == user.id).all()
+    ]
+    library_shared = (
+        db.query(Card).filter(Card.owner_id.in_(library_owner_ids)).all() if library_owner_ids else []
+    )
     favorite_ids = {
         f.card_id for f in db.query(CardFavorite).filter(CardFavorite.user_id == user.id).all()
     }
 
     result = [_card_out(c, is_favorite=c.id in favorite_ids) for c in own]
+    seen_ids = set()
     for c in shared:
+        seen_ids.add(c.id)
+        result.append(_card_out(c, is_favorite=c.id in favorite_ids, shared_by=_shared_by_label(c, user)))
+    for c in library_shared:
+        if c.id in seen_ids:
+            continue  # gia' condivisa anche singolarmente: non duplicare in lista
         result.append(_card_out(c, is_favorite=c.id in favorite_ids, shared_by=_shared_by_label(c, user)))
     return result
 
@@ -61,6 +76,14 @@ def create_card(payload: CardCreate, db: Session = Depends(get_db), user: User =
     db.commit()
     db.refresh(card)
     return _card_out(card)
+
+
+def _library_share(owner_id: str, db: Session, user: User) -> LibraryShare | None:
+    return (
+        db.query(LibraryShare)
+        .filter(LibraryShare.owner_id == owner_id, LibraryShare.shared_with_user_id == user.id)
+        .first()
+    )
 
 
 def _get_editable_card(card_id: str, db: Session, user: User) -> Card:
@@ -76,12 +99,16 @@ def _get_editable_card(card_id: str, db: Session, user: User) -> Card:
     )
     if share and share.permission == SharePermission.EDIT:
         return card
+    lib_share = _library_share(card.owner_id, db, user)
+    if lib_share and lib_share.permission == SharePermission.EDIT:
+        return card
     raise HTTPException(status_code=403, detail="Non hai i permessi per modificare questa carta")
 
 
 def _get_readable_card(card_id: str, db: Session, user: User) -> Card:
-    """Carta di proprieta' o condivisa con l'utente (a prescindere dal permesso):
-    basta per i preferiti, che sono una preferenza personale di visualizzazione."""
+    """Carta di proprieta' o condivisa con l'utente (a prescindere dal permesso,
+    singolarmente o come parte di una libreria intera): basta per i preferiti,
+    che sono una preferenza personale di visualizzazione."""
     card = db.query(Card).filter(Card.id == card_id).first()
     if not card:
         raise HTTPException(status_code=404, detail="Carta non trovata")
@@ -93,6 +120,8 @@ def _get_readable_card(card_id: str, db: Session, user: User) -> Card:
         .first()
     )
     if share:
+        return card
+    if _library_share(card.owner_id, db, user):
         return card
     raise HTTPException(status_code=403, detail="Non hai accesso a questa carta")
 
