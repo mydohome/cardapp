@@ -24,7 +24,7 @@ export default function CardTile({
     <div className="card-tile-wrapper">
       <Link to={`/card/${card.id}`} className="card-tile">
         {card.shared_by && <span className="badge badge-shared">condivisa</span>}
-        <span className={"card-label" + (showLogo ? " has-logo" : "")}>{card.label}</span>
+        <span className="card-label">{card.label}</span>
         {showLogo && (
           <span className="card-tile-logo-circle">
             <img src={card.store!.logo_url!} alt="" onError={() => setLogoFailed(true)} />

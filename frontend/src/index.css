@@ -94,19 +94,23 @@ button:disabled {
 
 /* Sfondo blu pieno (stessa palette di banner/tab bar) invece del logo a
    tutto badge: le favicon sono spesso piccole/sfocate se ingrandite a
-   riempire l'intero riquadro. La scritta bianca e grande resta il modo
-   primario di riconoscere la carta; il logo, quando c'e', e' solo un
-   cerchietto piccolo in un angolo, mai il protagonista del badge. */
+   riempire l'intero riquadro. La scritta bianca e grande, centrata, resta
+   il modo primario di riconoscere la carta; il logo, quando c'e', e' solo
+   un cerchietto piccolo sotto al testo, mai il protagonista del badge. */
 .card-tile {
   position: relative;
   display: flex;
-  align-items: flex-end;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
   aspect-ratio: 1 / 1;
   border-radius: 12px;
-  padding: 14px;
+  padding: 16px 12px;
   background: linear-gradient(135deg, #2563eb 0%, #0764f6 100%);
   text-decoration: none;
   color: white;
+  text-align: center;
   overflow: hidden;
 }
 
@@ -118,16 +122,9 @@ button:disabled {
   color: #ffffff;
 }
 
-.card-label.has-logo {
-  padding-right: 34px; /* non finire sotto al cerchietto del logo */
-}
-
 .card-tile-logo-circle {
-  position: absolute;
-  right: 10px;
-  bottom: 10px;
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   background: #ffffff;
   display: flex;

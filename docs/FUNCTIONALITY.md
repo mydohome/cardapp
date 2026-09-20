@@ -63,10 +63,12 @@ le altre sono previste ma non ancora sviluppate.
   era troppo in alto). Scan e la vista fullscreen del barcode restano a schermo intero,
   senza tab bar.
 - **[MVP]** Badge carta nella griglia: sfondo blu pieno (stessa palette di banner/tab
-  bar) con il nome della carta grande, in grassetto e bianco - il modo primario per
-  riconoscerla, non il logo. Il logo del negozio, quando disponibile, è solo un
-  cerchietto piccolo in basso a destra (le favicon ingrandite a piena carta
-  risultavano piccole/sfocate); senza logo, nessun cerchietto, solo la scritta.
+  bar) con il nome della carta centrato, grande, in grassetto e bianco - il modo
+  primario per riconoscerla, non il logo. Il logo del negozio, quando disponibile, è
+  solo un cerchietto piccolo sotto al nome (le favicon ingrandite a piena carta
+  risultavano piccole/sfocate); senza logo, nessun cerchietto, solo la scritta
+  centrata. Pulsanti azione (preferito/modifica/condividi) in alto a destra, badge
+  "condivisa" in alto a sinistra.
 - **[MVP]** Ricerca istantanea client-side (Fuse.js) su tutte le carte caricate in cache locale.
 - **[MVP]** Vista fullscreen del barcode con Screen Wake Lock (evita spegnimento schermo alla cassa),
   nome del negozio/carta in grande e in grassetto. Per EAN-13/EAN-8 il rendering ricentra il
