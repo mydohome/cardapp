@@ -70,7 +70,11 @@ le altre sono previste ma non ancora sviluppate.
   spazio solo a sinistra e il codice appare visibilmente spostato a destra (bug verificato
   pixel per pixel sul canvas grezzo, non era un problema di notch/safe-area come ipotizzato
   in un primo momento). Non si usa l'opzione `guardwhitespace` di bwip-js perché aggiunge gli
-  indicatori "<"/">" ben visibili accanto al codice, fuori posto su una carta fedeltà.
+  indicatori "<"/">" ben visibili accanto al codice, fuori posto su una carta fedeltà. Per i
+  QR code, l'opzione `height` di bwip-js (pensata per l'altezza delle barre nei formati
+  lineari) viene omessa: passata a un codice a matrice lo stira in verticale invece di
+  scalarlo, deformando un quadrato in un rettangolo (232×435px anziché 232×232px, verificato
+  con bwip-js in Node) - un QR deformato può anche non essere più leggibile da uno scanner.
 - **[MVP]** Sezione "Recenti" per accesso rapido alle carte usate più spesso.
 - **[MVP]** Preferiti: tab dedicato con le carte segnate con la stella (☆/★ su ogni carta).
   È una preferenza personale per utente (tabella separata `card_favorites`), non un campo

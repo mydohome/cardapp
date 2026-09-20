@@ -43,7 +43,13 @@ export default function CardFullscreenPage() {
         bcid: BWIP_TYPE_BY_FORMAT[card.barcode_format] || "code128",
         text: card.barcode_value,
         scale: 4,
-        height: card.barcode_format === "QRCODE" ? 40 : 15,
+        // "height" e' pensato per barcode lineari (altezza delle barre in mm):
+        // su un codice a matrice come il QR, bwip-js lo interpreta come
+        // altezza dell'intero simbolo e lo STIRA in verticale invece di
+        // scalarlo, deformando i moduli quadrati in rettangoli (verificato:
+        // con height diventa 232x435px, senza torna un quadrato 232x232).
+        // Va quindi omesso per QRCODE; per tutti gli altri formati serve.
+        ...(card.barcode_format === "QRCODE" ? {} : { height: 15 }),
         includetext: true,
       });
       const balanced = centerBarcodeCanvas(offscreen);
