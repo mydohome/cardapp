@@ -52,10 +52,15 @@ le altre sono previste ma non ancora sviluppate.
   con `docker compose exec app python -m app.update_store_logos`.
 
 ## 4. Ricerca e visualizzazione
+- **[MVP]** Icona app/favicon in stile "liquid glass" (pannello di vetro traslucido con
+  riflesso diagonale e ombra, su sfondo blu sfumato), disegnata come SVG vettoriale e
+  resa in PNG alle varie dimensioni (`icon-512`/`icon-192`/`apple-touch-icon`/`favicon`);
+  il favicon usa una variante semplificata apposta (bordo e barre più spesse), perché
+  i dettagli fini del disegno pieno si perdono sotto i 32px.
 - **[MVP]** Navigazione a tab bar in basso (Scan, Ricerca, Preferiti, Impostazioni), in
   stile "liquid glass" (pillola flottante traslucida con `backdrop-filter`, icone SVG
   lineari dedicate per funzione, non emoji), con banner brandizzato in alto (logo +
-  wordmark "CardApp" + tagline, dalla grafica fornita). Banner e tab attiva usano
+  wordmark "CardApp" + tagline). Banner e tab attiva usano
   **lo stesso gradiente pieno** (`#2563eb` → `#0764f6`, non velato di trasparenza sulla
   tab per non farlo sembrare un blu diverso una volta mescolato con lo sfondo scuro
   della pillola). "Ricerca" è la schermata iniziale: banner → campo ricerca → griglia
